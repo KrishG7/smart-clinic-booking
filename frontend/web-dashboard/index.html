@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Clinic Booking - Doctor/Staff Dashboard">
+    <title>Dashboard — Smart Clinic Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">🏥</div>
+                <h2>Wait Zero</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#queue" class="nav-item" data-section="queue">
+                    <span class="nav-icon">🎫</span>
+                    <span class="nav-text">Token Queue</span>
+                </a>
+                <a href="#appointments" class="nav-item" data-section="appointments">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">Appointments</span>
+                </a>
+                <a href="#prescriptions" class="nav-item" data-section="prescriptions">
+                    <span class="nav-icon">💊</span>
+                    <span class="nav-text">Prescriptions</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span class="user-name" id="userName">Dr. Doctor</span>
+                    <span class="user-role" id="userRole">Doctor</span>
+                </div>
+                <button class="btn btn-link" id="logoutBtn">🚪 Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="top-bar">
+                <button class="menu-toggle" id="menuToggle">☰</button>
+                <h1 class="page-title" id="pageTitle">Dashboard</h1>
+                <div class="header-actions">
+                    <span class="current-date" id="currentDate"></span>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section class="content-section active" id="section-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card stat-primary">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="totalPatients">0</h3>
+                            <p>Total Patients Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <h3 id="completedPatients">0</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-warning">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3 id="waitingPatients">0</h3>
+                            <p>Waiting</p>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-danger">
+                        <div class="stat-icon">🚨</div>
+                        <div class="stat-info">
+                            <h3 id="emergencyCount">0</h3>
+                            <p>Emergencies</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card current-token-card">
+                        <h2>Currently Serving</h2>
+                        <div class="current-token" id="currentTokenDisplay">
+                            <div class="token-number-large">--</div>
+                            <p class="token-patient">No patient</p>
+                        </div>
+                        <button class="btn btn-primary btn-full" id="callNextBtn">
+                            📢 Call Next Patient
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <h2>Quick Actions</h2>
+                        <div class="quick-actions">
+                            <button class="btn btn-danger btn-full" id="emergencyBtn">
+                                🚨 Emergency Interrupt
+                            </button>
+                            <button class="btn btn-secondary btn-full" id="skipBtn">
+                                ⏭️ Skip Current
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Queue Section -->
+            <section class="content-section" id="section-queue">
+                <div class="section-header">
+                    <h2>Live Token Queue</h2>
+                    <button class="btn btn-primary" id="refreshQueueBtn">🔄 Refresh</button>
+                </div>
+                <div class="queue-list" id="queueList">
+                    <p class="empty-state">Loading queue...</p>
+                </div>
+            </section>
+
+            <!-- Appointments Section -->
+            <section class="content-section" id="section-appointments">
+                <div class="section-header">
+                    <h2>Today's Appointments</h2>
+                    <input type="date" id="appointmentDate" class="date-picker">
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>Token #</th>
+                                <th>Patient Name</th>
+                                <th>Phone</th>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsBody">
+                            <tr>
+                                <td colspan="7" class="empty-state">Loading...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Prescriptions Section -->
+            <section class="content-section" id="section-prescriptions">
+                <div class="section-header">
+                    <h2>Issue Prescription</h2>
+                </div>
+                <div class="card">
+                    <form id="prescriptionForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prescPatient">Patient</label>
+                                <select id="prescPatient" required>
+                                    <option value="">Select patient...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prescAppointment">Appointment</label>
+                                <select id="prescAppointment" required>
+                                    <option value="">Select appointment...</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="diagnosis">Diagnosis</label>
+                            <textarea id="diagnosis" rows="3" placeholder="Enter diagnosis..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Medications</label>
+                            <div id="medicationsList">
+                                <div class="medication-row">
+                                    <input type="text" placeholder="Medicine name" class="med-name">
+                                    <input type="text" placeholder="Dosage" class="med-dosage">
+                                    <input type="text" placeholder="Duration" class="med-duration">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-link" id="addMedBtn">+ Add Medication</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="instructions">Instructions</label>
+                            <textarea id="instructions" rows="2" placeholder="Special instructions..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="followUpDate">Follow-up Date</label>
+                            <input type="date" id="followUpDate">
+                        </div>
+                        <button type="submit" class="btn btn-primary">💊 Issue Prescription</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Emergency Modal -->
+    <div class="modal" id="emergencyModal" style="display:none;">
+        <div class="modal-content">
+            <h2>🚨 Emergency Interrupt</h2>
+            <p>This will insert an emergency token at the top of the queue.</p>
+            <div class="form-group">
+                <label for="emergencyPatient">Patient ID</label>
+                <input type="number" id="emergencyPatient" placeholder="Enter patient ID" required>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="confirmEmergency">Confirm Emergency</button>
+                <button class="btn btn-secondary" id="cancelEmergency">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/queue.js"></script>
+    <script src="js/appointments.js"></script>
+    <script src="js/prescriptions.js"></script>
+</body>
+
+</html>
