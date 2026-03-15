@@ -1,0 +1,125 @@
+/* =============================================
+   Responsive Design — Mobile & Tablet
+   ============================================= */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .medication-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 24px;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .top-bar {
+        padding: 0 16px;
+    }
+
+    .content-section {
+        padding: 16px;
+    }
+
+    .login-card {
+        padding: 28px 20px;
+    }
+
+    .token-number-large {
+        font-size: 56px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-info h3 {
+        font-size: 22px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .queue-item {
+        flex-wrap: wrap;
+        padding: 12px;
+    }
+
+    .header-actions {
+        display: none;
+    }
+}
+
+/* Large screens (1200px and above) */
+@media (min-width: 1200px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .content-section {
+        max-width: 1200px;
+    }
+}
+
+/* Print styles */
+@media print {
+
+    .sidebar,
+    .top-bar,
+    .btn,
+    .menu-toggle {
+        display: none !important;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .content-section {
+        display: block !important;
+        padding: 0;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+}
