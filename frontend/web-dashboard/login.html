@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smart Clinic Booking - Doctor/Staff Login Portal">
+    <title>Login — Smart Clinic Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo-icon">🏥</div>
+                <h1>Smart Clinic Booking</h1>
+                <p class="subtitle">Doctor & Staff Portal</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number"
+                           required pattern="[0-9]{10,15}" maxlength="15">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"
+                           placeholder="Enter your password" required minlength="6">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+                    <span class="btn-text">Sign In</span>
+                    <span class="btn-loader" style="display:none;">Signing in...</span>
+                </button>
+            </form>
+
+            <div class="divider">
+                <span>or sign in with OTP</span>
+            </div>
+
+            <form id="otpForm" class="otp-form" style="display:none;">
+                <div class="form-group">
+                    <label for="otpPhone">Phone Number</label>
+                    <input type="tel" id="otpPhone" name="otpPhone" placeholder="Phone number" required>
+                </div>
+                <div class="form-group otp-input-group" style="display:none;">
+                    <label for="otpCode">Enter OTP</label>
+                    <input type="text" id="otpCode" name="otpCode" placeholder="6-digit OTP"
+                           maxlength="6" pattern="[0-9]{6}">
+                </div>
+                <button type="submit" class="btn btn-secondary btn-full" id="otpBtn">
+                    Send OTP
+                </button>
+            </form>
+
+            <button class="btn btn-link" id="toggleOTP">Use OTP Login</button>
+
+            <div class="login-footer">
+                <p>Test Credentials: Phone <strong>9876543211</strong> | Password <strong>test123</strong></p>
+            </div>
+        </div>
+
+        <div id="alertMessage" class="alert" style="display:none;"></div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>
