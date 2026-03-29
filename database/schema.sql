@@ -3,8 +3,8 @@
 -- Healthcare Management System
 -- ============================================
 
-CREATE DATABASE IF NOT EXISTS smart_clinic_booking;
-USE smart_clinic_booking;
+CREATE DATABASE IF NOT EXISTS smart_clinic;
+USE smart_clinic;
 
 -- ============================================
 -- Users Table (Common for all roles)
@@ -88,7 +88,8 @@ CREATE TABLE IF NOT EXISTS appointments (
     INDEX idx_doctor_id (doctor_id),
     INDEX idx_appointment_date (appointment_date),
     INDEX idx_status (status),
-    INDEX idx_sync_status (sync_status)
+    INDEX idx_sync_status (sync_status),
+    UNIQUE KEY idx_unique_token (doctor_id, appointment_date, token_no)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================

@@ -10,34 +10,51 @@ class Appointment {
     /**
      * Create a new appointment (supports offline booking via local_id)
      */
-    static async create(appointmentData) {
+    static async create(appointmentData, maxRetries = 15) {
         const {
             patientId, doctorId, appointmentDate, appointmentTime,
             type, reason, syncStatus, localId
         } = appointmentData;
 
-        // Get next token number for the doctor on that date
-        const tokenResult = await query(
-            `SELECT COALESCE(MAX(token_no), 0) + 1 as nextToken
-       FROM appointments
-       WHERE doctor_id = ? AND appointment_date = ?`,
-            [doctorId, appointmentDate]
-        );
-        const tokenNo = tokenResult[0].nextToken;
+        let attempt = 0;
+        while (attempt < maxRetries) {
+            try {
+                // Get next token number for the doctor on that date
+                const tokenResult = await query(
+                    `SELECT COALESCE(MAX(token_no), 0) + 1 as nextToken
+                     FROM appointments
+                     WHERE doctor_id = ? AND appointment_date = ?`,
+                    [doctorId, appointmentDate]
+                );
+                const tokenNo = tokenResult[0].nextToken;
 
-        const result = await query(
-            `INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time,
-       token_no, type, reason, sync_status, local_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [patientId, doctorId, appointmentDate, appointmentTime,
-                tokenNo, type || 'regular', reason, syncStatus || 'synced', localId]
-        );
+                const result = await query(
+                    `INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time,
+                     token_no, type, reason, sync_status, local_id)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [patientId, doctorId, appointmentDate, appointmentTime,
+                        tokenNo, type || 'regular', reason || null, syncStatus || 'synced', localId || null]
+                );
 
-        return {
-            id: result.insertId,
-            tokenNo,
-            ...appointmentData
-        };
+                return {
+                    id: result.insertId,
+                    tokenNo,
+                    ...appointmentData
+                };
+            } catch (err) {
+                if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+                    attempt++;
+                    console.warn(`[Conflict Avoided] Concurrent token allocation. Retrying limit ${attempt}/${maxRetries}...`);
+                    if (attempt >= maxRetries) {
+                        throw new Error('System queue highly overloaded. Please try again.');
+                    }
+                    // Stagger simultaneous parallel threads (0-200ms)
+                    await new Promise(r => setTimeout(r, Math.random() * 200));
+                } else {
+                    throw err; // Legitimate database error
+                }
+            }
+        }
     }
 
     /**

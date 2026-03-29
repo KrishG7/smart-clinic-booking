@@ -56,15 +56,12 @@ function minutesDiff(start, end) {
 }
 
 /**
- * Generate a random string of specified length
+ * Generate a cryptographically secure random hex string of specified byte length.
+ * Output length = length * 2 hex chars (e.g. length=16 → 32-char string).
  */
-function generateRandomString(length = 32) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+const crypto = require('crypto');
+function generateRandomString(length = 16) {
+    return crypto.randomBytes(length).toString('hex');
 }
 
 /**

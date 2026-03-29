@@ -58,6 +58,17 @@ async function getSpecializations(req, res) {
  */
 async function updateDoctor(req, res) {
     try {
+        // Only the doctor themselves or an admin can update a profile
+        if (req.user.role !== 'admin') {
+            const { query: dbQuery } = require('../config/database');
+            const [doctorRow] = await dbQuery(
+                'SELECT id FROM doctors WHERE user_id = ? AND id = ?',
+                [req.user.id, req.params.id]
+            );
+            if (!doctorRow) {
+                return errorResponse(res, 'Forbidden: you can only edit your own profile', 403);
+            }
+        }
         const doctor = await Doctor.update(req.params.id, req.body);
         if (!doctor) {
             return errorResponse(res, 'No fields to update or doctor not found', 400);
@@ -94,14 +105,31 @@ async function getAvailableSlots(req, res) {
  */
 async function getDoctorStats(req, res) {
     try {
-        const patientCount = await Doctor.getTodayPatientCount(req.params.id);
-        const doctor = await Doctor.findById(req.params.id);
+        // Single query — avoids two round-trips and handles unknown IDs correctly
+        const { query: dbQuery } = require('../config/database');
+        const rows = await dbQuery(
+            `SELECT d.max_patients_per_day,
+                    COUNT(a.id) AS today_patients
+             FROM doctors d
+             LEFT JOIN appointments a
+               ON a.doctor_id = d.id
+               AND a.appointment_date = CURDATE()
+               AND a.status != 'cancelled'
+             WHERE d.id = ?
+             GROUP BY d.id, d.max_patients_per_day`,
+            [req.params.id]
+        );
 
+        if (rows.length === 0) {
+            return errorResponse(res, 'Doctor not found', 404);
+        }
+
+        const { max_patients_per_day, today_patients } = rows[0];
         successResponse(res, {
             doctorId: req.params.id,
-            todayPatients: patientCount,
-            maxPatients: doctor ? doctor.max_patients_per_day : 0,
-            slotsRemaining: doctor ? doctor.max_patients_per_day - patientCount : 0
+            todayPatients: today_patients,
+            maxPatients: max_patients_per_day,
+            slotsRemaining: max_patients_per_day - today_patients
         });
     } catch (error) {
         errorResponse(res, 'Failed to get stats: ' + error.message);

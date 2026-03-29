@@ -4,6 +4,7 @@
  */
 
 const Token = require('../models/Token');
+const { query: dbQuery } = require('../config/database');
 const { successResponse, errorResponse } = require('../utils/helpers');
 
 /**
@@ -168,7 +169,6 @@ async function getTokenStats(req, res) {
  */
 async function getMyTokens(req, res) {
     try {
-        const { query: dbQuery } = require('../config/database');
         const patients = await dbQuery('SELECT id FROM patients WHERE user_id = ?', [req.user.id]);
 
         if (patients.length === 0) {

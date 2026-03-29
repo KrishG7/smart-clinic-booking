@@ -64,7 +64,7 @@ class Doctor {
         let sql = `SELECT d.*, u.name, u.phone, u.email
                FROM doctors d
                JOIN users u ON d.user_id = u.id
-               WHERE d.is_available = TRUE`;
+               WHERE d.is_available = TRUE AND u.is_active = TRUE`;
         const params = [];
 
         if (filters.specialization) {
@@ -134,7 +134,7 @@ class Doctor {
             [doctorId, date]
         );
 
-        const bookedTimes = booked.map(a => a.appointment_time);
+        const bookedTimes = booked.map(a => String(a.appointment_time));
 
         // Generate all possible slots
         const slots = [];

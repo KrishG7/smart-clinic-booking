@@ -5,8 +5,14 @@
 
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'default_jwt_secret_change_in_production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
+// Crash loudly if JWT_SECRET is not set in production — a missing secret means
+// any attacker can forge tokens with the public fallback string.
+if (!process.env.JWT_SECRET && process.env.NODE_ENV === 'production') {
+    throw new Error('FATAL: JWT_SECRET environment variable must be set in production.');
+}
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_only_secret_not_for_production';
 
 /**
  * Generate a JWT token for a user

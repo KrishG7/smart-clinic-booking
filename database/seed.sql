@@ -3,23 +3,23 @@
 -- Sample data for testing and demo purposes
 -- ============================================
 
-USE smart_clinic_booking;
+USE smart_clinic;
 
 -- ============================================
 -- Seed Users
 -- ============================================
 INSERT INTO users (name, phone, email, password_hash, role) VALUES
 -- Patients (password: test123 - hashed with bcryptjs)
-('Rahul Sharma', '9876543210', 'rahul@example.com', '$2a$10$XQCg1z4YU1.FJG5F5f5cFOsKzVGhJ5H5I5J5K5L5M5N5O5P5Q5R5S', 'patient'),
-('Priya Patel', '9876543213', 'priya@example.com', '$2a$10$XQCg1z4YU1.FJG5F5f5cFOsKzVGhJ5H5I5J5K5L5M5N5O5P5Q5R5S', 'patient'),
-('Amit Kumar', '9876543214', 'amit@example.com', '$2a$10$XQCg1z4YU1.FJG5F5f5cFOsKzVGhJ5H5I5J5K5L5M5N5O5P5Q5R5S', 'patient'),
+('Rahul Sharma', '9876543210', 'rahul@example.com', '$2a$10$RLmxZPeoF7UZ0Xbg8fdwVOjAq.AhFAd0TZMV86qXI.U1Fi8781K1y', 'patient'),
+('Priya Patel', '9876543213', 'priya@example.com', '$2a$10$RLmxZPeoF7UZ0Xbg8fdwVOjAq.AhFAd0TZMV86qXI.U1Fi8781K1y', 'patient'),
+('Amit Kumar', '9876543214', 'amit@example.com', '$2a$10$RLmxZPeoF7UZ0Xbg8fdwVOjAq.AhFAd0TZMV86qXI.U1Fi8781K1y', 'patient'),
 
 -- Doctors
-('Dr. Sanjay Mehta', '9876543211', 'drsanjay@clinic.com', '$2a$10$XQCg1z4YU1.FJG5F5f5cFOsKzVGhJ5H5I5J5K5L5M5N5O5P5Q5R5S', 'doctor'),
-('Dr. Neha Gupta', '9876543215', 'drneha@clinic.com', '$2a$10$XQCg1z4YU1.FJG5F5f5cFOsKzVGhJ5H5I5J5K5L5M5N5O5P5Q5R5S', 'doctor'),
+('Dr. Sanjay Mehta', '9876543211', 'drsanjay@clinic.com', '$2a$10$RLmxZPeoF7UZ0Xbg8fdwVOjAq.AhFAd0TZMV86qXI.U1Fi8781K1y', 'doctor'),
+('Dr. Neha Gupta', '9876543215', 'drneha@clinic.com', '$2a$10$RLmxZPeoF7UZ0Xbg8fdwVOjAq.AhFAd0TZMV86qXI.U1Fi8781K1y', 'doctor'),
 
 -- Staff/Admin
-('Admin Staff', '9876543212', 'admin@clinic.com', '$2a$10$XQCg1z4YU1.FJG5F5f5cFOsKzVGhJ5H5I5J5K5L5M5N5O5P5Q5R5S', 'admin');
+('Admin Staff', '9876543212', 'admin@clinic.com', '$2a$10$RLmxZPeoF7UZ0Xbg8fdwVOjAq.AhFAd0TZMV86qXI.U1Fi8781K1y', 'admin');
 
 -- ============================================
 -- Seed Patients

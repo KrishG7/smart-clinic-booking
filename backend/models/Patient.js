@@ -53,14 +53,16 @@ class Patient {
      * Get all patients with optional pagination
      */
     static async findAll(page = 1, limit = 20) {
-        const offset = (page - 1) * limit;
+        // Use safe integer coercion — inline LIMIT/OFFSET to avoid mysql2 prepared-statement
+        // bind type rejection on some MySQL 8.x versions
+        const safeLimit  = parseInt(limit,  10) || 20;
+        const safeOffset = parseInt((page - 1) * safeLimit, 10) || 0;
         const results = await query(
             `SELECT p.*, u.name, u.phone, u.email
        FROM patients p
        JOIN users u ON p.user_id = u.id
        ORDER BY p.created_at DESC
-       LIMIT ? OFFSET ?`,
-            [limit, offset]
+       LIMIT ${safeLimit} OFFSET ${safeOffset}`
         );
 
         const countResult = await query('SELECT COUNT(*) as total FROM patients');
@@ -68,7 +70,7 @@ class Patient {
             patients: results,
             total: countResult[0].total,
             page,
-            totalPages: Math.ceil(countResult[0].total / limit)
+            totalPages: Math.ceil(countResult[0].total / safeLimit)
         };
     }
 

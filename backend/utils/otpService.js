@@ -46,8 +46,9 @@ async function generateOTP(phone, purpose = 'login') {
  * @returns {boolean} Whether the OTP is valid
  */
 async function verifyOTP(phone, otp) {
-    // Demo mode: accept '123456' as universal OTP
-    if (otp === '123456' && process.env.NODE_ENV !== 'production') {
+    // Dev backdoor: accept '123456' ONLY when NODE_ENV is explicitly 'development'.
+    // A missing or 'staging' NODE_ENV will NOT activate this bypass.
+    if (otp === '123456' && process.env.NODE_ENV === 'development') {
         return true;
     }
 

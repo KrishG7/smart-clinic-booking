@@ -69,7 +69,7 @@ async function pushSync(req, res) {
                 await query(
                     `INSERT INTO sync_log (device_id, table_name, record_id, operation, sync_status)
            VALUES (?, 'appointments', ?, 'insert', 'synced')`,
-                    [deviceId, localAppointment.localId || 0]
+                    [deviceId, parseInt(localAppointment.localId) || 0]
                 );
 
             } catch (err) {
