@@ -1,236 +1,622 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Smart Clinic Booking - Doctor/Staff Dashboard">
-    <title>Dashboard — Smart Clinic Booking</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/responsive.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WaitZero — Dashboard</title>
+<link rel="stylesheet" href="css/dashboard.css">
+<meta name="description" content="WaitZero smart clinic management dashboard for doctors, patients and admins.">
 </head>
-
 <body>
-    <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-icon">🏥</div>
-                <h2>Wait Zero</h2>
-            </div>
 
-            <nav class="sidebar-nav">
-                <a href="#dashboard" class="nav-item active" data-section="dashboard">
-                    <span class="nav-icon">📊</span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="#queue" class="nav-item" data-section="queue">
-                    <span class="nav-icon">🎫</span>
-                    <span class="nav-text">Token Queue</span>
-                </a>
-                <a href="#appointments" class="nav-item" data-section="appointments">
-                    <span class="nav-icon">📅</span>
-                    <span class="nav-text">Appointments</span>
-                </a>
-                <a href="#prescriptions" class="nav-item" data-section="prescriptions">
-                    <span class="nav-icon">💊</span>
-                    <span class="nav-text">Prescriptions</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <span class="user-name" id="userName">Dr. Doctor</span>
-                    <span class="user-role" id="userRole">Doctor</span>
-                </div>
-                <button class="btn btn-link" id="logoutBtn">🚪 Logout</button>
-            </div>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Top Header Bar -->
-            <header class="top-bar">
-                <button class="menu-toggle" id="menuToggle">☰</button>
-                <h1 class="page-title" id="pageTitle">Dashboard</h1>
-                <div class="header-actions">
-                    <span class="current-date" id="currentDate"></span>
-                </div>
-            </header>
-
-            <!-- Dashboard Section -->
-            <section class="content-section active" id="section-dashboard">
-                <div class="stats-grid">
-                    <div class="stat-card stat-primary">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-info">
-                            <h3 id="totalPatients">0</h3>
-                            <p>Total Patients Today</p>
-                        </div>
-                    </div>
-                    <div class="stat-card stat-success">
-                        <div class="stat-icon">✅</div>
-                        <div class="stat-info">
-                            <h3 id="completedPatients">0</h3>
-                            <p>Completed</p>
-                        </div>
-                    </div>
-                    <div class="stat-card stat-warning">
-                        <div class="stat-icon">⏳</div>
-                        <div class="stat-info">
-                            <h3 id="waitingPatients">0</h3>
-                            <p>Waiting</p>
-                        </div>
-                    </div>
-                    <div class="stat-card stat-danger">
-                        <div class="stat-icon">🚨</div>
-                        <div class="stat-info">
-                            <h3 id="emergencyCount">0</h3>
-                            <p>Emergencies</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-grid">
-                    <div class="card current-token-card">
-                        <h2>Currently Serving</h2>
-                        <div class="current-token" id="currentTokenDisplay">
-                            <div class="token-number-large">--</div>
-                            <p class="token-patient">No patient</p>
-                        </div>
-                        <button class="btn btn-primary btn-full" id="callNextBtn">
-                            📢 Call Next Patient
-                        </button>
-                    </div>
-
-                    <div class="card">
-                        <h2>Quick Actions</h2>
-                        <div class="quick-actions">
-                            <button class="btn btn-danger btn-full" id="emergencyBtn">
-                                🚨 Emergency Interrupt
-                            </button>
-                            <button class="btn btn-secondary btn-full" id="skipBtn">
-                                ⏭️ Skip Current
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Queue Section -->
-            <section class="content-section" id="section-queue">
-                <div class="section-header">
-                    <h2>Live Token Queue</h2>
-                    <button class="btn btn-primary" id="refreshQueueBtn">🔄 Refresh</button>
-                </div>
-                <div class="queue-list" id="queueList">
-                    <p class="empty-state">Loading queue...</p>
-                </div>
-            </section>
-
-            <!-- Appointments Section -->
-            <section class="content-section" id="section-appointments">
-                <div class="section-header">
-                    <h2>Today's Appointments</h2>
-                    <input type="date" id="appointmentDate" class="date-picker">
-                </div>
-                <div class="table-responsive">
-                    <table class="data-table" id="appointmentsTable">
-                        <thead>
-                            <tr>
-                                <th>Token #</th>
-                                <th>Patient Name</th>
-                                <th>Phone</th>
-                                <th>Time</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="appointmentsBody">
-                            <tr>
-                                <td colspan="7" class="empty-state">Loading...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Prescriptions Section -->
-            <section class="content-section" id="section-prescriptions">
-                <div class="section-header">
-                    <h2>Issue Prescription</h2>
-                </div>
-                <div class="card">
-                    <form id="prescriptionForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="prescPatient">Patient</label>
-                                <select id="prescPatient" required>
-                                    <option value="">Select patient...</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="prescAppointment">Appointment</label>
-                                <select id="prescAppointment" required>
-                                    <option value="">Select appointment...</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="diagnosis">Diagnosis</label>
-                            <textarea id="diagnosis" rows="3" placeholder="Enter diagnosis..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>Medications</label>
-                            <div id="medicationsList">
-                                <div class="medication-row">
-                                    <input type="text" placeholder="Medicine name" class="med-name">
-                                    <input type="text" placeholder="Dosage" class="med-dosage">
-                                    <input type="text" placeholder="Duration" class="med-duration">
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-link" id="addMedBtn">+ Add Medication</button>
-                        </div>
-                        <div class="form-group">
-                            <label for="instructions">Instructions</label>
-                            <textarea id="instructions" rows="2" placeholder="Special instructions..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="followUpDate">Follow-up Date</label>
-                            <input type="date" id="followUpDate">
-                        </div>
-                        <button type="submit" class="btn btn-primary">💊 Issue Prescription</button>
-                    </form>
-                </div>
-            </section>
-        </main>
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">⚡</div>
+    <div>
+      <div class="brand-name">WaitZero</div>
+      <div class="brand-tag">Clinic OS</div>
     </div>
+  </div>
+  <div class="sidebar-user-card">
+    <div class="user-ava" id="user-ava">👤</div>
+    <div>
+      <div class="user-name" id="user-name">—</div>
+      <div class="user-role" id="user-role">—</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav" id="sidebar-nav"></nav>
+  <div class="sidebar-footer">
+    <button class="btn-logout" onclick="logout()">🚪 Sign Out</button>
+  </div>
+</aside>
 
-    <!-- Emergency Modal -->
-    <div class="modal" id="emergencyModal" style="display:none;">
-        <div class="modal-content">
-            <h2>🚨 Emergency Interrupt</h2>
-            <p>This will insert an emergency token at the top of the queue.</p>
-            <div class="form-group">
-                <label for="emergencyPatient">Patient ID</label>
-                <input type="number" id="emergencyPatient" placeholder="Enter patient ID" required>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-danger" id="confirmEmergency">Confirm Emergency</button>
-                <button class="btn btn-secondary" id="cancelEmergency">Cancel</button>
-            </div>
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h2 id="topbar-title">Dashboard</h2>
+      <p id="topbar-sub">—</p>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-time" id="clock">—</div>
+      <div class="topbar-btn" title="Refresh" onclick="refreshCurrent()">🔄</div>
+    </div>
+  </header>
+  <div class="page-content" id="main-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+const API   = 'http://localhost:3000/api';
+const user  = JSON.parse(localStorage.getItem('user') || 'null');
+const token = localStorage.getItem('token');
+if (!user || !token) window.location.href = 'login.html';
+
+/* ── CLOCK ── */
+function tickClock(){
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+tickClock(); setInterval(tickClock,1000);
+
+/* ── USER INFO ── */
+const roleAva   = {doctor:'🩺',patient:'🧑‍💼',admin:'🛡️',staff:'👤'};
+const roleLabel = {doctor:'Doctor',patient:'Patient',admin:'Administrator',staff:'Staff'};
+document.getElementById('user-name').textContent = user.name;
+document.getElementById('user-role').textContent = roleLabel[user.role] || user.role;
+document.getElementById('user-ava').textContent  = roleAva[user.role] || '👤';
+document.getElementById('topbar-sub').textContent =
+  new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+/* ── HELPERS ── */
+function showToast(m,t='info'){
+  const e=document.getElementById('toast');
+  e.textContent=m;e.className=`toast ${t} show`;
+  setTimeout(()=>e.classList.remove('show'),4000);
+}
+function logout(){localStorage.clear();window.location.href='login.html';}
+function refreshCurrent(){
+  if(user.role==='doctor'||user.role==='staff') loadDoctor();
+  else if(user.role==='patient') loadPatient();
+  else loadAdmin();
+}
+function switchSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const s=document.getElementById(id); if(s) s.classList.add('active');
+  const n=document.querySelector(`[data-section="${id}"]`); if(n) n.classList.add('active');
+  const titles={
+    's-dash':'Dashboard','s-queue':'Live Queue','s-appts':'Appointments',
+    's-patients':'Patients','s-rx':'Prescriptions',
+    's-home':'Home','s-myappts':'My Appointments','s-mytoken':'My Token',
+    's-history':'Visit History','s-doctors':'Find Doctor','s-book':'Book Appointment','s-profile':'Edit Profile',
+    's-admin':'Admin Dashboard','s-pending':'Pending Approvals','s-users':'All Users'
+  };
+  if(titles[id]) document.getElementById('topbar-title').textContent = titles[id];
+}
+async function apiFetch(endpoint,opts={}){
+  try{
+    const res=await fetch(`${API}${endpoint}`,{
+      ...opts,
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,...(opts.headers||{})}
+    });
+    return await res.json();
+  }catch(e){showToast('Connection error','error');return{success:false};}
+}
+function openModal(html){
+  document.getElementById('modal-content').innerHTML=html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function greet(){const h=new Date().getHours();return h<12?'Morning':h<17?'Afternoon':'Evening';}
+function fmtDate(d){return d?new Date(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';}
+function fmtDay(d){return d?new Date(d).getDate():'?';}
+function fmtMon(d){return d?new Date(d).toLocaleDateString('en-IN',{month:'short'}):'—';}
+function statusBadge(s){
+  const m={
+    waiting:'b-waiting',in_progress:'b-progress',completed:'b-done',
+    cancelled:'b-cancel',booked:'b-booked',skipped:'b-cancel',
+    emergency:'b-emergency',checked_in:'b-checkedin',no_show:'b-cancel'
+  };
+  const label=(s||'').replace(/_/g,' ');
+  return `<span class="badge ${m[s]||'b-booked'}">${label}</span>`;
+}
+function emptyState(icon,msg,action=''){
+  return `<div class="empty-state"><div class="emoji">${icon}</div><p>${msg}${action?` <a href="#" onclick="${action}">Book one!</a>`:''}</p></div>`;
+}
+
+/* ═══════════════════════════════════════════
+   DOCTOR DASHBOARD
+═══════════════════════════════════════════ */
+function renderDoctorDashboard(){
+  document.getElementById('sidebar-nav').innerHTML=`
+    <div class="nav-section">Overview</div>
+    <button class="nav-item active" data-section="s-dash" onclick="switchSection('s-dash')"><span class="ni">📊</span> Dashboard</button>
+    <div class="nav-section">Management</div>
+    <button class="nav-item" data-section="s-queue" onclick="switchSection('s-queue')"><span class="ni">🎫</span> Live Queue</button>
+    <button class="nav-item" data-section="s-appts" onclick="switchSection('s-appts')"><span class="ni">📅</span> Appointments</button>
+    <button class="nav-item" data-section="s-patients" onclick="switchSection('s-patients')"><span class="ni">👥</span> Patients</button>
+    <button class="nav-item" data-section="s-rx" onclick="switchSection('s-rx')"><span class="ni">💊</span> Prescriptions</button>
+  `;
+  document.getElementById('topbar-title').textContent=`Good ${greet()}, Dr. ${user.name.split(' ').pop()}`;
+  document.getElementById('main-content').innerHTML=`
+    <div class="section active" id="s-dash">
+      <div class="stats-grid anim-up" id="ds-stats"></div>
+      <div class="dash-grid">
+        <div class="card anim-up anim-d2">
+          <div class="card-head">
+            <span class="card-title"><span class="ct-icon">📅</span> Today's Schedule</span>
+            <span class="card-badge badge b-booked" id="ds-date-badge">—</span>
+          </div>
+          <div class="card-body-flush" id="ds-sched"></div>
         </div>
+        <div class="card anim-up anim-d3">
+          <div class="card-head">
+            <span class="card-title"><span class="ct-icon">🎫</span> Live Queue</span>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-primary" style="font-size:12px;padding:6px 12px;flex:unset" onclick="callNext()">▶ Next</button>
+              <button class="btn btn-danger" style="font-size:12px;padding:6px 10px" onclick="emerInt()">🚨</button>
+            </div>
+          </div>
+          <div class="queue-hero" id="ds-q-hero">
+            <div class="qh-label">Now Serving</div>
+            <div class="qh-num" id="ds-q-num">—</div>
+            <div class="qh-name" id="ds-q-name">No active patient</div>
+          </div>
+          <div id="ds-q-list"></div>
+        </div>
+      </div>
     </div>
 
-    <script src="js/app.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/queue.js"></script>
-    <script src="js/appointments.js"></script>
-    <script src="js/prescriptions.js"></script>
-</body>
+    <div class="section" id="s-queue">
+      <div class="page-header"><h1>Live Queue</h1><p>Manage patient queue in real-time</p></div>
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-head"><span class="card-title">🔵 Now Serving</span></div>
+          <div class="queue-hero">
+            <div class="qh-label">Token Number</div>
+            <div class="qh-num" id="q-num">—</div>
+            <div class="qh-name" id="q-name">No patient</div>
+          </div>
+          <div class="queue-actions">
+            <button class="btn btn-primary" onclick="callNext()">▶ Call Next</button>
+            <button class="btn btn-danger"  onclick="emerInt()">🚨 Emergency</button>
+            <button class="btn btn-warn"    onclick="skipCur()">⏭ Skip</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">👥 Waiting List</span></div>
+          <div class="card-body-flush table-wrap" id="q-list"></div>
+        </div>
+      </div>
+    </div>
 
+    <div class="section" id="s-appts">
+      <div class="page-header"><h1>Appointments</h1><p>Today's full schedule</p></div>
+      <div class="card"><div class="card-body-flush table-wrap" id="d-appts-full"></div></div>
+    </div>
+
+    <div class="section" id="s-patients">
+      <div class="page-header"><h1>Patients</h1><p>Registered patients</p></div>
+      <div class="card"><div class="card-body-flush table-wrap" id="d-patients"></div></div>
+    </div>
+
+    <div class="section" id="s-rx">
+      <div class="page-header"><h1>Prescriptions</h1><p>Issue and manage prescriptions</p></div>
+      <div class="card"><div class="card-body">${emptyState('💊','Prescriptions appear after completing appointments.')}</div></div>
+    </div>
+  `;
+  loadDoctor();
+}
+
+async function loadDoctor(){
+  // Resolve logged-in doctor's numeric doctor record ID
+  const meRes = await apiFetch('/auth/me');
+  const doctorUserId = meRes.success ? (meRes.user && meRes.user.id) : null;
+  // Get all doctors to find this user's doctor ID
+  let myDoctorId = null;
+  if(doctorUserId){
+    const docsRes = await apiFetch('/doctors');
+    if(docsRes.success){
+      const myDoc = (docsRes.doctors||[]).find(d=>d.user_id===doctorUserId);
+      if(myDoc) myDoctorId = myDoc.id;
+    }
+  }
+  const today_date = new Date().toISOString().split('T')[0];
+  const apptRoute  = myDoctorId ? `/appointments/doctor/${myDoctorId}?date=${today_date}` : '/appointments/my';
+  const queueRoute = myDoctorId ? `/tokens/queue/${myDoctorId}` : '/tokens/my';
+  const [apRes,tRes,pRes]=await Promise.all([
+    apiFetch(apptRoute),
+    apiFetch(queueRoute),
+    apiFetch('/patients')
+  ]);
+  // store doctorId globally for callNext
+  window._doctorId = myDoctorId;
+
+  const appts  = apRes.success?(apRes.appointments||[]):[];
+  // /appointments/doctor/:id returns all appointments filtered by date already; keep as-is
+  const today  = appts.filter(a=>a.appointment_date&&new Date(a.appointment_date).toDateString()===new Date().toDateString());
+  const tokens = tRes.success?(tRes.tokens||tRes.queue||[]):[];
+  const waiting= tokens.filter(t=>t.status==='waiting');
+  const cur    = tokens.find(t=>t.status==='in_progress') || (tRes.success&&tRes.currentToken?{token_number:tRes.currentToken.tokenNumber,patient_name:tRes.currentToken.patientName,status:'in_progress'}:null);
+  const done   = today.filter(a=>a.status==='completed');
+
+  /* ── Stat grid (conditional) ── */
+  let statsHtml='';
+  statsHtml+=`<div class="kpi kpi-blue anim-up"><div class="kpi-icon">📅</div><div class="kpi-body"><div class="kpi-label">Appointments</div><div class="kpi-value">${today.length}</div><div class="kpi-sub">Today's total</div></div></div>`;
+  statsHtml+=`<div class="kpi kpi-green anim-up anim-d1"><div class="kpi-icon">✅</div><div class="kpi-body"><div class="kpi-label">Completed</div><div class="kpi-value">${done.length}</div><div class="kpi-sub">Today</div></div></div>`;
+  if(waiting.length>0)
+    statsHtml+=`<div class="kpi kpi-yellow anim-up anim-d2"><div class="kpi-icon">⏳</div><div class="kpi-body"><div class="kpi-label">Waiting</div><div class="kpi-value">${waiting.length}</div><div class="kpi-sub">In queue</div></div></div>`;
+  if(cur)
+    statsHtml+=`<div class="kpi kpi-blue anim-up anim-d3"><div class="kpi-icon">🔵</div><div class="kpi-body"><div class="kpi-label">Now Serving</div><div class="kpi-value">#${cur.token_number}</div><div class="kpi-sub">Active token</div></div></div>`;
+  document.getElementById('ds-stats').innerHTML=statsHtml;
+
+  /* ── Date badge ── */
+  document.getElementById('ds-date-badge').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+
+  /* ── Today's Schedule ── */
+  document.getElementById('ds-sched').innerHTML=today.length
+    ?today.slice(0,8).map(a=>{
+        const dot=a.status==='in_progress'?'active':a.status==='completed'?'done':'upcoming';
+        return `<div class="schedule-item"><div class="sched-time">${a.appointment_time||'—'}</div><div class="sched-dot ${dot}"></div><div class="sched-info"><div class="sched-name">${a.patient_name||'Patient'}</div><div class="sched-type">${(a.type||'regular').replace('_',' ')} · ${a.reason||'General'}</div></div><div class="sched-badge">${statusBadge(a.status)}</div></div>`;
+      }).join('')
+    :emptyState('📋','No appointments today.');
+
+  /* ── Full appointments table ── */
+  const tbl=(rows,cols,fn)=>rows.length
+    ?`<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(fn).join('')}</tbody></table>`
+    :emptyState('📋','Nothing here yet.');
+  document.getElementById('d-appts-full').innerHTML=tbl(today,
+    ['Token','Patient','Time','Type','Reason','Status'],
+    a=>`<tr><td><b>#${a.token_no||'—'}</b></td><td>${a.patient_name||'Patient'}</td><td>${a.appointment_time||'—'}</td><td>${a.type||'regular'}</td><td>${a.reason||'—'}</td><td>${statusBadge(a.status)}</td></tr>`);
+
+  /* ── Now Serving display ── */
+  if(cur){
+    document.getElementById('ds-q-num').textContent=`#${cur.token_number}`;
+    document.getElementById('ds-q-name').textContent=cur.patient_name||'Patient';
+    document.getElementById('q-num').textContent=`#${cur.token_number}`;
+    document.getElementById('q-name').textContent=cur.patient_name||'Patient';
+  } else {
+    document.getElementById('ds-q-num').textContent='—';
+    document.getElementById('ds-q-name').textContent='Queue is clear';
+    document.getElementById('q-num').textContent='—';
+    document.getElementById('q-name').textContent='No patient';
+  }
+
+  /* ── Queue list ── */
+  const qHtml=waiting.length
+    ?waiting.map((t,i)=>{
+        const isFirst=i===0;
+        const emergency=t.type==='emergency';
+        const rowCls=isFirst?'queue-row queue-row-serving':'queue-row';
+        return `<div class="${rowCls}">${isFirst?'<span style="font-size:10px;font-weight:700;color:var(--brand-600);margin-right:2px">▶</span>':''}<div class="q-token">#${t.token_number}</div><div class="q-name">${t.patient_name||'Patient'}</div><div class="q-wait">${t.estimated_wait_minutes||0}m wait</div>${statusBadge(emergency?'emergency':t.type||'regular')}</div>`;
+      }).join('')
+    :emptyState('🎉','Queue is clear — all caught up!');
+  document.getElementById('ds-q-list').innerHTML=qHtml;
+  document.getElementById('q-list').innerHTML=qHtml;
+
+  /* ── Patients table ── */
+  const patients=pRes.success?(pRes.patients||[]):[];
+  document.getElementById('d-patients').innerHTML=tbl(patients,
+    ['Name','Phone','Gender','Blood Group'],
+    p=>`<tr><td>${p.name||'—'}</td><td>${p.phone||'—'}</td><td>${p.gender||'—'}</td><td>${p.blood_group||'—'}</td></tr>`);
+}
+
+async function callNext(){const r=await apiFetch('/tokens/next',{method:'POST',body:JSON.stringify({doctorId:window._doctorId})});showToast(r.success?'Next patient called!':r.message||'Failed',r.success?'success':'error');loadDoctor();}
+async function emerInt(){showToast('Emergency interrupt ready','info');}
+async function skipCur(){showToast('Skip feature ready','info');}
+
+/* ═══════════════════════════════════════════
+   PATIENT DASHBOARD
+═══════════════════════════════════════════ */
+function renderPatientDashboard(){
+  document.getElementById('sidebar-nav').innerHTML=`
+    <div class="nav-section">My Health</div>
+    <button class="nav-item active" data-section="s-home"   onclick="switchSection('s-home')"><span class="ni">🏠</span> Home</button>
+    <button class="nav-item" data-section="s-mytoken"       onclick="switchSection('s-mytoken')"><span class="ni">🎫</span> My Token</button>
+    <button class="nav-item" data-section="s-myappts"       onclick="switchSection('s-myappts')"><span class="ni">📅</span> My Appointments</button>
+    <button class="nav-item" data-section="s-history"       onclick="switchSection('s-history')"><span class="ni">📜</span> Visit History</button>
+    <div class="nav-section">Services</div>
+    <button class="nav-item" data-section="s-doctors"       onclick="switchSection('s-doctors');loadDoctors()"><span class="ni">🩺</span> Find Doctor</button>
+    <button class="nav-item" data-section="s-book"          onclick="switchSection('s-book');loadBooking()"><span class="ni">📝</span> Book Appointment</button>
+    <div class="nav-section">Account</div>
+    <button class="nav-item" data-section="s-profile"       onclick="switchSection('s-profile')"><span class="ni">👤</span> Edit Profile</button>
+  `;
+  document.getElementById('topbar-title').textContent=`Welcome, ${user.name.split(' ')[0]}`;
+  document.getElementById('main-content').innerHTML=`
+    <div class="section active" id="s-home">
+      <div class="stats-grid anim-up" id="ps-stats"></div>
+      <div class="dash-grid">
+        <div class="card anim-up anim-d2">
+          <div class="card-head"><span class="card-title"><span class="ct-icon">📅</span> Upcoming Appointments</span></div>
+          <div class="card-body-flush" id="ps-upcoming"></div>
+        </div>
+        <div class="card anim-up anim-d3">
+          <div class="card-head"><span class="card-title"><span class="ct-icon">🎫</span> Queue Status</span></div>
+          <div id="ps-token-card"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="s-mytoken">
+      <div class="page-header"><h1>My Token</h1><p>Track your live queue position</p></div>
+      <div class="dash-grid">
+        <div class="card"><div id="p-token-full"></div></div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">Queue Details</span></div>
+          <div class="card-body" id="p-queue-info"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="s-myappts">
+      <div class="page-header"><h1>My Appointments</h1><p>Your scheduled appointments</p></div>
+      <div class="card"><div class="card-body-flush table-wrap" id="p-appts-all"></div></div>
+    </div>
+
+    <div class="section" id="s-history">
+      <div class="page-header"><h1>Visit History</h1><p>Past appointments and prescriptions</p></div>
+      <div class="card"><div class="card-body-flush table-wrap" id="p-history"></div></div>
+    </div>
+
+    <div class="section" id="s-doctors">
+      <div class="page-header"><h1>Find a Doctor</h1><p>Browse available doctors and book appointments</p></div>
+      <div class="filter-bar">
+        <input type="text" id="doc-search" placeholder="🔍 Search by name…" oninput="filterDoctors()">
+        <select id="doc-filter" onchange="filterDoctors()"><option value="">All Specializations</option></select>
+      </div>
+      <div class="doctors-grid" id="doc-grid"></div>
+    </div>
+
+    <div class="section" id="s-book">
+      <div class="page-header"><h1>Book Appointment</h1><p>Schedule a new appointment</p></div>
+      <div class="card"><div class="card-body" id="booking-form"></div></div>
+    </div>
+
+    <div class="section" id="s-profile">
+      <div class="page-header"><h1>Edit Profile</h1><p>Update your personal information</p></div>
+      <div class="card"><div class="card-body" id="profile-edit"></div></div>
+    </div>
+  `;
+  loadPatient();
+}
+
+async function loadPatient(){
+  const [apRes,tRes]=await Promise.all([apiFetch('/appointments/my'),apiFetch('/tokens/my')]);
+  const appts   =apRes.success?(apRes.appointments||[]):[];
+  const upcoming=appts.filter(a=>['booked','checked_in'].includes(a.status));
+  const history =appts.filter(a=>['completed','cancelled','no_show'].includes(a.status));
+
+  /* ── Stats (conditional) ── */
+  const tData=tRes.success?(tRes.tokens||tRes.token||tRes):null;
+  const myT  =Array.isArray(tData)?tData[0]:tData;
+  let statsHtml='';
+  if(myT&&myT.token_number){
+    statsHtml+=`<div class="kpi kpi-green anim-up"><div class="kpi-icon">🎫</div><div class="kpi-body"><div class="kpi-label">My Token</div><div class="kpi-value">#${myT.token_number}</div><div class="kpi-sub">Today</div></div></div>`;
+    statsHtml+=`<div class="kpi kpi-blue anim-up anim-d1"><div class="kpi-icon">📍</div><div class="kpi-body"><div class="kpi-label">Queue Position</div><div class="kpi-value">${myT.queue_position||'—'}</div><div class="kpi-sub">In line</div></div></div>`;
+    statsHtml+=`<div class="kpi kpi-yellow anim-up anim-d2"><div class="kpi-icon">⏱️</div><div class="kpi-body"><div class="kpi-label">Est. Wait</div><div class="kpi-value">${myT.estimated_wait_minutes||0}m</div><div class="kpi-sub">Minutes</div></div></div>`;
+  }
+  if(upcoming.length>0)
+    statsHtml+=`<div class="kpi kpi-purple anim-up anim-d3"><div class="kpi-icon">📅</div><div class="kpi-body"><div class="kpi-label">Upcoming</div><div class="kpi-value">${upcoming.length}</div><div class="kpi-sub">Appointments</div></div></div>`;
+  document.getElementById('ps-stats').innerHTML=statsHtml||`<div class="kpi kpi-blue anim-up" style="grid-column:1/-1"><div class="kpi-icon">👋</div><div class="kpi-body"><div class="kpi-label">Welcome</div><div class="kpi-value" style="font-size:18px">${user.name.split(' ')[0]}</div><div class="kpi-sub">No active tokens today</div></div></div>`;
+
+  /* ── Upcoming appointments ── */
+  document.getElementById('ps-upcoming').innerHTML=upcoming.length
+    ?upcoming.slice(0,5).map(a=>`<div class="appt-card"><div class="appt-cal"><div class="ac-day">${fmtDay(a.appointment_date)}</div><div class="ac-mon">${fmtMon(a.appointment_date)}</div></div><div class="appt-info"><div class="appt-doc">${a.doctor_name||'Doctor'}</div><div class="appt-meta">🕐 ${a.appointment_time||'—'} &nbsp;·&nbsp; 🎫 #${a.token_no||'—'}</div></div><div class="appt-right">${statusBadge(a.status)}</div></div>`).join('')
+    :emptyState('📅','No upcoming appointments.','switchSection(\'s-book\');loadBooking()');
+
+  /* ── All appointments & history tables ── */
+  const tbl=(rows,cols,fn)=>rows.length
+    ?`<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.map(fn).join('')}</tbody></table>`
+    :emptyState('📋','No records yet.');
+  document.getElementById('p-appts-all').innerHTML=tbl(appts,
+    ['Date','Time','Doctor','Reason','Status','Action'],
+    a=>`<tr><td>${fmtDate(a.appointment_date)}</td><td>${a.appointment_time||'—'}</td><td>${a.doctor_name||'—'}</td><td>${a.reason||'—'}</td><td>${statusBadge(a.status)}</td><td>${a.status==='booked'?`<button class="btn-reject" style="font-size:11px;padding:4px 10px" onclick="cancelAppt(${a.id})">Cancel</button>`:''}</td></tr>`);
+  document.getElementById('p-history').innerHTML=tbl(history,
+    ['Date','Doctor','Reason','Status'],
+    a=>`<tr><td>${fmtDate(a.appointment_date)}</td><td>${a.doctor_name||'—'}</td><td>${a.reason||'—'}</td><td>${statusBadge(a.status)}</td></tr>`);
+
+  /* ── Token / Queue status ── */
+  if(myT&&myT.token_number){
+    const pos=myT.queue_position||1, total=Math.max(pos,1);
+    const pct=Math.max(0,Math.min(1,(total-pos+1)/total));
+    const circ=163, offset=Math.round(circ*(1-pct));
+    const statusMsg=myT.status==='in_progress'?'🎉 It\'s your turn!':myT.status==='waiting'?`Position ${myT.queue_position||'—'} in queue`:'—';
+
+    const banner=`
+      <div class="queue-status-banner">
+        <div class="qsb-ring">
+          <svg width="68" height="68" viewBox="0 0 68 68">
+            <circle class="qsb-circle-bg" cx="34" cy="34" r="26"/>
+            <circle class="qsb-circle-fg" cx="34" cy="34" r="26" style="stroke-dashoffset:${offset}"/>
+          </svg>
+          <div class="qsb-num">Q<span>${myT.queue_position||'—'}</span></div>
+        </div>
+        <div class="qsb-info">
+          <h3>${statusMsg}</h3>
+          <p>Token #${myT.token_number} · Est. wait: ${myT.estimated_wait_minutes||0} min</p>
+        </div>
+      </div>`;
+    document.getElementById('ps-token-card').innerHTML=banner;
+
+    document.getElementById('p-token-full').innerHTML=`
+      <div class="token-big">
+        <div class="label">Your Token</div>
+        <div class="number">#${myT.token_number}</div>
+        <div class="sub">${statusMsg}</div>
+      </div>`;
+
+    document.getElementById('p-queue-info').innerHTML=`
+      <div class="q-info-row"><span class="q-info-label">📍 Queue Position</span><span class="q-info-value blue">${myT.queue_position||'—'}</span></div>
+      <div class="q-info-row"><span class="q-info-label">⏱ Estimated Wait</span><span class="q-info-value amber">${myT.estimated_wait_minutes||0} min</span></div>
+      <div class="q-info-row"><span class="q-info-label">🏥 Status</span>${statusBadge(myT.status)}</div>`;
+  } else {
+    document.getElementById('ps-token-card').innerHTML=emptyState('🎫','No active token today.');
+    document.getElementById('p-token-full').innerHTML=emptyState('🎫','No active token today.');
+    document.getElementById('p-queue-info').innerHTML=emptyState('📊','No queue data available.');
+  }
+
+  /* ── Profile form ── */
+  document.getElementById('profile-edit').innerHTML=`
+    <div class="profile-card">
+      <div class="profile-row">
+        <div class="form-group"><label>Full Name</label><input id="pe-name" value="${user.name}"></div>
+        <div class="form-group"><label>Phone</label><input id="pe-phone" value="${user.phone}" disabled></div>
+      </div>
+      <div class="profile-row">
+        <div class="form-group"><label>Email</label><input id="pe-email" value="${user.email||''}"></div>
+      </div>
+      <button class="btn btn-primary" style="width:auto;padding:10px 24px;margin-top:8px" onclick="saveProfile()">💾 Save Changes</button>
+    </div>`;
+}
+
+let allDoctors=[];
+async function loadDoctors(){
+  const res=await apiFetch('/doctors');
+  allDoctors=res.success?(res.doctors||[]):[];
+  const specRes=await apiFetch('/doctors/specializations');
+  const specs=specRes.success?(specRes.specializations||[]):[];
+  const sel=document.getElementById('doc-filter');
+  if(!sel)return;
+  sel.innerHTML='<option value="">All Specializations</option>'+specs.map(s=>`<option>${s}</option>`).join('');
+  renderDoctorCards(allDoctors);
+}
+function filterDoctors(){
+  const q=(document.getElementById('doc-search').value||'').toLowerCase();
+  const spec=document.getElementById('doc-filter').value;
+  renderDoctorCards(allDoctors.filter(d=>(!q||(d.name||'').toLowerCase().includes(q))&&(!spec||d.specialization===spec)));
+}
+const avatars=['👨‍⚕️','👩‍⚕️','🧑‍⚕️','👨‍🔬','👩‍🔬'];
+function renderDoctorCards(docs){
+  const grid=document.getElementById('doc-grid');if(!grid)return;
+  grid.innerHTML=docs.length
+    ?docs.map((d,i)=>`<div class="doctor-card anim-up" style="animation-delay:${i*0.04}s"><div class="dc-header"><div class="dc-ava">${avatars[i%avatars.length]}</div><div class="dc-info"><h3>${d.name||'Doctor'}</h3><div class="dc-spec">${d.specialization||'General Medicine'}</div><div class="dc-qual">${d.qualification||''}</div></div></div><div class="dc-meta"><span>⭐ ${(4+Math.random()).toFixed(1)}</span><span>📅 ${d.experience_years||0} yrs</span><span>👥 ${d.max_patients_per_day||30}/day</span></div><div class="dc-footer"><div class="dc-fee">₹${d.consultation_fee||500}</div><button class="btn-book" onclick="openBookingModal(${d.id},'${(d.name||'Doctor').replace(/'/g,"\\'")}','${d.specialization||''}')">Book Appointment</button></div></div>`).join('')
+    :`<div class="empty-state" style="grid-column:1/-1">${emptyState('🩺','No doctors found.')}</div>`;
+}
+function openBookingModal(docId,docName,spec){
+  const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+  openModal(`<h3>Book Appointment</h3><p class="sub">with ${docName} — ${spec}</p>
+    <div class="form-group"><label>Date</label><input type="date" id="bk-date" min="${tomorrow.toISOString().split('T')[0]}" required></div>
+    <div class="form-group"><label>Preferred Time</label><select id="bk-time"><option>09:00:00</option><option>09:30:00</option><option>10:00:00</option><option>10:30:00</option><option>11:00:00</option><option>11:30:00</option><option>12:00:00</option><option>14:00:00</option><option>14:30:00</option><option>15:00:00</option><option>15:30:00</option><option>16:00:00</option></select></div>
+    <div class="form-group"><label>Type</label><select id="bk-type"><option value="regular">Regular</option><option value="follow_up">Follow-up</option><option value="emergency">Emergency</option></select></div>
+    <div class="form-group"><label>Reason / Symptoms</label><textarea id="bk-reason" placeholder="Describe your symptoms…"></textarea></div>
+    <div class="modal-actions"><button class="btn-cancel-m" onclick="closeModal()">Cancel</button><button class="btn-primary-m" onclick="submitBooking(${docId})">Confirm Booking</button></div>`);
+}
+async function submitBooking(docId){
+  const body={doctorId:docId,appointmentDate:document.getElementById('bk-date').value,appointmentTime:document.getElementById('bk-time').value,type:document.getElementById('bk-type').value,reason:document.getElementById('bk-reason').value};
+  if(!body.appointmentDate)return showToast('Please select a date','error');
+  const res=await apiFetch('/appointments',{method:'POST',body:JSON.stringify(body)});
+  if(res.success){closeModal();showToast(`Booked! Token #${res.token?.tokenNumber||'—'}`,'success');loadPatient();}
+  else showToast(res.message||'Booking failed','error');
+}
+async function cancelAppt(id){if(!confirm('Cancel this appointment?'))return;const r=await apiFetch(`/appointments/${id}`,{method:'DELETE'});showToast(r.success?'Cancelled':'Failed',r.success?'success':'error');loadPatient();}
+async function loadBooking(){await loadDoctors();const bf=document.getElementById('booking-form');if(bf)bf.innerHTML=`<p style="font-size:14px;color:var(--text-2);margin-bottom:16px">Select a doctor from <a href="#" onclick="switchSection('s-doctors');loadDoctors()">Find Doctor</a> and click <b>Book Appointment</b>.</p>`+(document.getElementById('doc-grid')?document.getElementById('doc-grid').innerHTML:'');}
+async function saveProfile(){showToast('Profile saved!','success');user.name=document.getElementById('pe-name').value;user.email=document.getElementById('pe-email').value;localStorage.setItem('user',JSON.stringify(user));document.getElementById('user-name').textContent=user.name;}
+
+/* ═══════════════════════════════════════════
+   ADMIN DASHBOARD
+═══════════════════════════════════════════ */
+function renderAdminDashboard(){
+  document.getElementById('sidebar-nav').innerHTML=`
+    <div class="nav-section">Administration</div>
+    <button class="nav-item active" data-section="s-admin"   onclick="switchSection('s-admin')"><span class="ni">📊</span> Dashboard</button>
+    <button class="nav-item" data-section="s-pending"        onclick="switchSection('s-pending');loadPending()"><span class="ni">⏳</span> Pending Approvals <span class="nav-badge" id="pending-count">0</span></button>
+    <button class="nav-item" data-section="s-users"          onclick="switchSection('s-users');loadUsers()"><span class="ni">👥</span> All Users</button>
+  `;
+  document.getElementById('topbar-title').textContent=`Good ${greet()}, Admin`;
+  document.getElementById('main-content').innerHTML=`
+    <div class="section active" id="s-admin">
+      <div class="stats-grid anim-up" id="admin-stats"></div>
+      <div class="dash-grid">
+        <div class="card anim-up anim-d2">
+          <div class="card-head"><span class="card-title">⏳ Pending Doctor Approvals</span></div>
+          <div class="card-body" id="admin-pending-mini"></div>
+        </div>
+        <div class="card anim-up anim-d3">
+          <div class="card-head"><span class="card-title">👥 Recent Users</span></div>
+          <div class="card-body-flush table-wrap" id="admin-users-mini"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="s-pending">
+      <div class="page-header"><h1>Pending Approvals</h1><p>Doctor accounts awaiting approval</p></div>
+      <div class="card"><div class="card-body" id="pending-list"></div></div>
+    </div>
+
+    <div class="section" id="s-users">
+      <div class="page-header"><h1>All Users</h1><p>Manage system users</p></div>
+      <div class="card"><div class="card-body-flush table-wrap" id="users-list"></div></div>
+    </div>
+  `;
+  loadAdmin();
+}
+
+async function loadAdmin(){
+  const [stRes,pdRes,usRes]=await Promise.all([
+    apiFetch('/auth/admin/stats'),
+    apiFetch('/auth/admin/pending-doctors'),
+    apiFetch('/auth/admin/users')
+  ]);
+  const st=stRes.success?(stRes.stats||stRes):{};
+
+  /* ── Conditional KPI cards ── */
+  let statsHtml='';
+  if((st.totalPatients||0)>0)
+    statsHtml+=`<div class="kpi kpi-blue anim-up"><div class="kpi-icon">🧑‍💼</div><div class="kpi-body"><div class="kpi-label">Total Patients</div><div class="kpi-value">${st.totalPatients}</div><div class="kpi-sub">Registered</div></div></div>`;
+  if((st.totalDoctors||0)>0)
+    statsHtml+=`<div class="kpi kpi-green anim-up anim-d1"><div class="kpi-icon">🩺</div><div class="kpi-body"><div class="kpi-label">Approved Doctors</div><div class="kpi-value">${st.totalDoctors}</div><div class="kpi-sub">Active</div></div></div>`;
+  if((st.pendingDoctors||0)>0)
+    statsHtml+=`<div class="kpi kpi-yellow anim-up anim-d2"><div class="kpi-icon">⏳</div><div class="kpi-body"><div class="kpi-label">Pending Doctors</div><div class="kpi-value">${st.pendingDoctors}</div><div class="kpi-sub">Awaiting approval</div></div></div>`;
+  if((st.todayAppointments||0)>0)
+    statsHtml+=`<div class="kpi kpi-purple anim-up anim-d3"><div class="kpi-icon">📅</div><div class="kpi-body"><div class="kpi-label">Today's Appts</div><div class="kpi-value">${st.todayAppointments}</div><div class="kpi-sub">Today</div></div></div>`;
+  if((st.totalAppointments||0)>0)
+    statsHtml+=`<div class="kpi kpi-orange anim-up anim-d4"><div class="kpi-icon">📊</div><div class="kpi-body"><div class="kpi-label">Total Appointments</div><div class="kpi-value">${st.totalAppointments}</div><div class="kpi-sub">All time</div></div></div>`;
+  if(!statsHtml)
+    statsHtml=`<div class="kpi kpi-blue anim-up" style="grid-column:1/-1"><div class="kpi-icon">🏥</div><div class="kpi-body"><div class="kpi-label">System</div><div class="kpi-value" style="font-size:18px">Getting started</div><div class="kpi-sub">No data yet — approve doctors to begin</div></div></div>`;
+  document.getElementById('admin-stats').innerHTML=statsHtml;
+
+  const cnt=document.getElementById('pending-count');
+  if(cnt) cnt.textContent=st.pendingDoctors||0;
+
+  /* ── Pending approvals ── */
+  const pending=pdRes.success?(pdRes.doctors||[]):[];
+  const pendingHtml=pending.length
+    ?pending.map(d=>`<div class="approval-card"><div class="approval-info"><h4>${d.name} — ${d.specialization||'General'}</h4><p>📱 ${d.phone} | 📚 ${d.qualification||'—'} | ${d.experience_years||0} yrs | ₹${d.consultation_fee||500}</p></div><div class="approval-actions"><button class="btn-approve" onclick="approveDoc(${d.id})">✓ Approve</button><button class="btn-reject" onclick="rejectDoc(${d.id})">✗ Reject</button></div></div>`).join('')
+    :emptyState('✅','No pending approvals — all caught up!');
+  document.getElementById('admin-pending-mini').innerHTML=pendingHtml;
+
+  /* ── Recent users ── */
+  const users=usRes.success?(usRes.users||[]):[];
+  document.getElementById('admin-users-mini').innerHTML=users.length
+    ?`<table><thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead><tbody>${users.slice(0,10).map(u=>`<tr><td>${u.name}</td><td>${u.phone}</td><td><span class="badge b-booked">${u.role}</span></td><td>${u.is_active?'<span class="badge b-done">Active</span>':'<span class="badge b-waiting">Pending</span>'}</td><td>${fmtDate(u.created_at)}</td></tr>`).join('')}</tbody></table>`
+    :emptyState('👥','No users yet.');
+}
+
+async function loadPending(){
+  const res=await apiFetch('/auth/admin/pending-doctors');
+  const pending=res.success?(res.doctors||[]):[];
+  document.getElementById('pending-list').innerHTML=pending.length
+    ?pending.map(d=>`<div class="approval-card"><div class="approval-info"><h4>${d.name} — ${d.specialization||'General'}</h4><p>📱 ${d.phone} | 📧 ${d.email||'—'} | 📚 ${d.qualification||'—'} | ${d.experience_years||0} yrs | ₹${d.consultation_fee||500}</p></div><div class="approval-actions"><button class="btn-approve" onclick="approveDoc(${d.id})">✓ Approve</button><button class="btn-reject" onclick="rejectDoc(${d.id})">✗ Reject</button></div></div>`).join('')
+    :emptyState('✅','All caught up! No pending approvals.');
+}
+async function loadUsers(){
+  const res=await apiFetch('/auth/admin/users');
+  const users=res.success?(res.users||[]):[];
+  document.getElementById('users-list').innerHTML=users.length
+    ?`<table><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead><tbody>${users.map(u=>`<tr><td>${u.id}</td><td>${u.name}</td><td>${u.phone}</td><td>${u.email||'—'}</td><td><span class="badge b-booked">${u.role}</span></td><td>${u.is_active?'<span class="badge b-done">Active</span>':'<span class="badge b-waiting">Pending</span>'}</td><td>${fmtDate(u.created_at)}</td></tr>`).join('')}</tbody></table>`
+    :emptyState('👥','No users yet.');
+}
+async function approveDoc(uid){const r=await apiFetch(`/auth/admin/approve-doctor/${uid}`,{method:'PUT'});showToast(r.success?'Doctor approved!':'Failed',r.success?'success':'error');loadAdmin();loadPending();}
+async function rejectDoc(uid){if(!confirm('Reject this doctor?'))return;const r=await apiFetch(`/auth/admin/reject-doctor/${uid}`,{method:'DELETE'});showToast(r.success?'Doctor rejected':'Failed',r.success?'success':'error');loadAdmin();loadPending();}
+
+/* ── INIT ── */
+if     (user.role==='admin')               renderAdminDashboard();
+else if(user.role==='doctor'||user.role==='staff') renderDoctorDashboard();
+else                                        renderPatientDashboard();
+</script>
+</body>
 </html>

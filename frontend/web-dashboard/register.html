@@ -1,0 +1,516 @@
+web application/stitch/projects/17201920856874375858/screens/15910204982236442943
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaitZero — Login</title>
+    <meta name="description" content="WaitZero Smart Clinic — Secure Login Portal">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --white: #ffffff;
+            --bg: #f0f4f8;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --border-focus: #0ea5e9;
+            --text: #0f172a;
+            --text-2: #475569;
+            --text-3: #94a3b8;
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --primary-light: #e0f2fe;
+            --primary-glow: rgba(14, 165, 233, 0.15);
+            --green: #10b981;
+            --green-light: #d1fae5;
+            --red: #ef4444;
+            --orange: #f97316;
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Left side - branding */
+        .brand-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb, #7c3aed);
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .brand-side::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            max-width: 400px;
+        }
+
+        .brand-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .brand-title {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .brand-subtitle {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        .brand-features {
+            margin-top: 36px;
+            text-align: left;
+        }
+
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .brand-feature .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Right side - form */
+        .form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .login-box h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .login-box .sub {
+            font-size: 14px;
+            color: var(--text-2);
+            margin-bottom: 28px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-3);
+            cursor: pointer;
+            border-radius: 10px;
+            border: none;
+            background: none;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: var(--white);
+            color: var(--primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--white);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-3);
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .otp-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .otp-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .btn-otp {
+            padding: 12px 16px;
+            white-space: nowrap;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-2);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .demo-box {
+            margin-top: 20px;
+            padding: 14px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #92400e;
+            line-height: 1.7;
+        }
+
+        .demo-box strong {
+            color: #d97706;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            max-width: 360px;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background: var(--green-light);
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+        }
+
+        .toast.error {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #991b1b;
+        }
+
+        .toast.info {
+            background: var(--primary-light);
+            border: 1px solid #7dd3fc;
+            color: #0c4a6e;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+
+            .brand-side {
+                padding: 40px 20px;
+                min-height: auto;
+            }
+
+            .brand-features {
+                display: none;
+            }
+
+            .form-side {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="brand-side">
+        <div class="brand-content">
+            <div class="brand-icon">⚡</div>
+            <div class="brand-title">WaitZero</div>
+            <div class="brand-subtitle">Smart clinic management that eliminates waiting. Book appointments, track
+                queues, and get treated faster.</div>
+            <div class="brand-features">
+                <div class="brand-feature">
+                    <div class="icon">📅</div> Book appointments online or offline
+                </div>
+                <div class="brand-feature">
+                    <div class="icon">🎫</div> Live token queue — know your wait time
+                </div>
+                <div class="brand-feature">
+                    <div class="icon">📍</div> GPS auto check-in when you arrive
+                </div>
+                <div class="brand-feature">
+                    <div class="icon">💊</div> Digital prescriptions on your phone
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-side">
+        <div class="login-box">
+            <h2>Welcome back</h2>
+            <p class="sub">Sign in to your WaitZero account</p>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-password" onclick="switchTab('password')">Password</button>
+                <button class="auth-tab" id="tab-otp" onclick="switchTab('otp')">OTP Login</button>
+            </div>
+
+            <form id="password-form" onsubmit="handlePasswordLogin(event)">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="login-phone" placeholder="Enter your phone number" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn-primary" id="login-btn">Sign In</button>
+            </form>
+
+            <form id="otp-form" class="hidden" onsubmit="handleOtpLogin(event)">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <div class="otp-row">
+                        <div class="form-group"><input type="tel" id="otp-phone" placeholder="Enter phone number"
+                                required></div>
+                        <button type="button" class="btn-otp" id="send-otp-btn" onclick="sendOtp()">Send OTP</button>
+                    </div>
+                </div>
+                <div class="form-group hidden" id="otp-code-group">
+                    <label>OTP Code</label>
+                    <input type="text" id="otp-code" placeholder="Enter 6-digit OTP" maxlength="6">
+                </div>
+                <button type="submit" class="btn-primary hidden" id="verify-otp-btn">Verify & Sign In</button>
+            </form>
+
+            <div class="register-link">
+                Don't have an account? <a href="register.html">Create one</a>
+            </div>
+
+            <div class="demo-box">
+                <strong>📋 Demo Credentials:</strong><br>
+                Doctor: <b>9876543211</b> / test123<br>
+                Patient: <b>9876543210</b> / test123<br>
+                Admin: <b>9876543212</b> / test123<br>
+                OTP Code: <b>123456</b> (demo mode)
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+
+        function switchTab(tab) {
+            document.getElementById('tab-password').classList.toggle('active', tab === 'password');
+            document.getElementById('tab-otp').classList.toggle('active', tab === 'otp');
+            document.getElementById('password-form').classList.toggle('hidden', tab !== 'password');
+            document.getElementById('otp-form').classList.toggle('hidden', tab !== 'otp');
+        }
+
+        function showToast(msg, type = 'info') {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.className = `toast ${type} show`;
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+
+        async function handlePasswordLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true; btn.textContent = 'Signing in...';
+            try {
+                const res = await fetch(`${API}/auth/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: document.getElementById('login-phone').value, password: document.getElementById('login-password').value })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showToast('Login successful!', 'success');
+                    setTimeout(() => window.location.href = 'index.html', 600);
+                } else { showToast(data.message || 'Login failed', 'error'); }
+            } catch (err) { showToast('Connection error. Is the server running?', 'error'); }
+            btn.disabled = false; btn.textContent = 'Sign In';
+        }
+
+        async function sendOtp() {
+            const phone = document.getElementById('otp-phone').value;
+            if (!phone) return showToast('Enter phone number', 'error');
+            try {
+                const res = await fetch(`${API}/auth/send-otp`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('otp-code-group').classList.remove('hidden');
+                    document.getElementById('verify-otp-btn').classList.remove('hidden');
+                    showToast(data.devCode ? `Demo OTP: ${data.devCode}` : (data.otp ? `Demo OTP: ${data.otp}` : 'OTP sent!'), 'success');
+                } else { showToast(data.message || 'Failed', 'error'); }
+            } catch (err) { showToast('Connection error', 'error'); }
+        }
+
+        async function handleOtpLogin(e) {
+            e.preventDefault();
+            try {
+                const res = await fetch(`${API}/auth/verify-otp`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: document.getElementById('otp-phone').value, otp: document.getElementById('otp-code').value })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    showToast('OTP verified!', 'success');
+                    setTimeout(() => window.location.href = 'index.html', 600);
+                } else { showToast(data.message || 'Invalid OTP', 'error'); }
+            } catch (err) { showToast('Connection error', 'error'); }
+        }
+
+        if (localStorage.getItem('token')) window.location.href = 'index.html';
+    </script>
+</body>
+
+</html>
