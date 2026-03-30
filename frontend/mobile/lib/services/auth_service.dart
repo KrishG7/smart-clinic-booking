@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
 import 'api_service.dart';
 
@@ -10,6 +10,13 @@ class AuthService {
   factory AuthService() => _instance;
   AuthService._internal();
 
+  FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  // Explicit injector for our mock test suite
+  void setStorageForTesting(FlutterSecureStorage mockStorage) {
+    _storage = mockStorage;
+  }
+
   /// Login with phone and password
   Future<Map<String, dynamic>> login(String phone, String password) async {
     final result = await ApiService().post('/auth/login', {
@@ -18,7 +25,7 @@ class AuthService {
     });
 
     if (result['success'] == true) {
-      await _saveSession(result['token'], result['user']);
+      await saveSessionCache(result['token'], result['user']);
     }
     return result;
   }
@@ -27,7 +34,7 @@ class AuthService {
   Future<Map<String, dynamic>> register(Map<String, dynamic> userData) async {
     final result = await ApiService().post('/auth/register', userData);
     if (result['success'] == true) {
-      await _saveSession(result['token'], result['user']);
+      await saveSessionCache(result['token'], result['user']);
     }
     return result;
   }
@@ -48,21 +55,19 @@ class AuthService {
     });
 
     if (result['success'] == true) {
-      await _saveSession(result['token'], result['user']);
+      await saveSessionCache(result['token'], result['user']);
     }
     return result;
   }
 
   /// Get stored auth token
   Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(AppConstants.tokenKey);
+    return await _storage.read(key: AppConstants.tokenKey);
   }
 
   /// Get stored user data
   Future<Map<String, dynamic>?> getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userData = prefs.getString(AppConstants.userKey);
+    final userData = await _storage.read(key: AppConstants.userKey);
     if (userData != null) {
       return jsonDecode(userData);
     }
@@ -77,15 +82,13 @@ class AuthService {
 
   /// Logout
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(AppConstants.tokenKey);
-    await prefs.remove(AppConstants.userKey);
+    await _storage.delete(key: AppConstants.tokenKey);
+    await _storage.delete(key: AppConstants.userKey);
   }
 
   /// Save session after login/register
-  Future<void> _saveSession(String token, Map<String, dynamic> user) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(AppConstants.tokenKey, token);
-    await prefs.setString(AppConstants.userKey, jsonEncode(user));
+  Future<void> saveSessionCache(String token, Map<String, dynamic> user) async {
+    await _storage.write(key: AppConstants.tokenKey, value: token);
+    await _storage.write(key: AppConstants.userKey, value: jsonEncode(user));
   }
 }

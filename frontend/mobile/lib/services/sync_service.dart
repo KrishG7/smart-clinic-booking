@@ -1,8 +1,7 @@
-import 'dart:convert';
+import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'api_service.dart';
 import 'local_db_service.dart';
-import 'auth_service.dart';
 import '../utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +15,7 @@ class SyncService {
   final _localDb = LocalDbService();
   final _api = ApiService();
   bool _isSyncing = false;
+  StreamSubscription? _connectivitySub; // track to prevent memory leaks
 
   /// Check connectivity and sync if online
   Future<void> syncIfOnline() async {
@@ -42,17 +42,19 @@ class SyncService {
       }
 
       // Convert to sync format
-      final appointments = pendingRecords.map((record) => {
-        'localId': record['local_id'],
-        'patientId': record['patient_id'],
-        'doctorId': record['doctor_id'],
-        'appointmentDate': record['appointment_date'],
-        'appointmentTime': record['appointment_time'],
-        'type': record['type'],
-        'reason': record['reason'],
-        'status': record['status'],
-        'updatedAt': record['created_at'],
-      }).toList();
+      final appointments = pendingRecords
+          .map((record) => {
+                'localId': record['local_id'],
+                'patientId': record['patient_id'],
+                'doctorId': record['doctor_id'],
+                'appointmentDate': record['appointment_date'],
+                'appointmentTime': record['appointment_time'],
+                'type': record['type'],
+                'reason': record['reason'],
+                'status': record['status'],
+                'updatedAt': record['created_at'],
+              })
+          .toList();
 
       // Push to server
       final result = await _api.post('/sync/push', {
@@ -73,7 +75,8 @@ class SyncService {
 
         // Save last sync timestamp
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(AppConstants.lastSyncKey, DateTime.now().toIso8601String());
+        await prefs.setString(
+            AppConstants.lastSyncKey, DateTime.now().toIso8601String());
       }
 
       _isSyncing = false;
@@ -104,12 +107,20 @@ class SyncService {
 
   /// Start periodic sync (call from app initialization)
   void startPeriodicSync() {
-    // Listen for connectivity changes
-    Connectivity().onConnectivityChanged.listen((result) {
+    // Cancel any existing subscription to prevent listener stacking
+    // on hot-restart, re-login, or repeated init calls.
+    _connectivitySub?.cancel();
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((result) {
       if (result != ConnectivityResult.none) {
         syncIfOnline();
       }
     });
+  }
+
+  /// Stop periodic sync and release resources
+  void dispose() {
+    _connectivitySub?.cancel();
+    _connectivitySub = null;
   }
 
   /// Get current sync status

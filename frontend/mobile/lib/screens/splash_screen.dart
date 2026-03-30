@@ -11,7 +11,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
@@ -50,22 +51,23 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       body: Center(
         child: FadeTransition(
           opacity: _fadeAnimation,
-          child: Column(
+          child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.local_hospital, size: 80, color: AppTheme.primaryLight),
-              const SizedBox(height: 24),
-              const Text(
+              Icon(Icons.local_hospital,
+                  size: 80, color: AppTheme.primaryLight),
+              SizedBox(height: 24),
+              Text(
                 'Wait Zero',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               Text(
                 'Smart Clinic Booking',
                 style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
               ),
-              const SizedBox(height: 48),
-              const CircularProgressIndicator(color: AppTheme.primaryLight),
+              SizedBox(height: 48),
+              CircularProgressIndicator(color: AppTheme.primaryLight),
             ],
           ),
         ),

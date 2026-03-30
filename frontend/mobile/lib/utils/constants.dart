@@ -1,10 +1,12 @@
 /// App Constants
 /// API endpoints, configuration values, and string constants
+library;
 
 class AppConstants {
   // API Configuration
-  static const String apiBaseUrl = 'http://10.0.2.2:3000/api'; // Android emulator
-  // static const String apiBaseUrl = 'http://localhost:3000/api'; // iOS simulator
+  // static const String apiBaseUrl = 'http://10.0.2.2:3000/api'; // Android emulator
+  static const String apiBaseUrl =
+      'http://localhost:3000/api'; // iOS simulator / Web
 
   // Storage Keys
   static const String tokenKey = 'auth_token';
@@ -27,5 +29,6 @@ class AppConstants {
   // App Info
   static const String appName = 'Wait Zero';
   static const String appVersion = '1.0.0';
-  static const String appDescription = 'Smart Clinic Booking — No more waiting!';
+  static const String appDescription =
+      'Smart Clinic Booking — No more waiting!';
 }

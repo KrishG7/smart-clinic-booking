@@ -22,7 +22,10 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _errorMessage;
 
   Future<void> _handleLogin() async {
-    setState(() { _loading = true; _errorMessage = null; });
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
 
     try {
       final result = await AuthService().login(
@@ -33,26 +36,41 @@ class _LoginScreenState extends State<LoginScreen> {
       if (result['success'] == true && mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       } else {
-        setState(() { _errorMessage = result['message'] ?? 'Login failed'; });
+        setState(() {
+          _errorMessage = result['message'] ?? 'Login failed';
+        });
       }
     } catch (e) {
-      setState(() { _errorMessage = 'Connection error. Is the server running?'; });
+      setState(() {
+        _errorMessage = 'Connection error. Is the server running?';
+      });
     } finally {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
   Future<void> _handleOTP() async {
-    setState(() { _loading = true; _errorMessage = null; });
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
 
     try {
       if (!_otpSent) {
-        final result = await AuthService().sendOTP(_phoneController.text.trim());
+        final result =
+            await AuthService().sendOTP(_phoneController.text.trim());
         if (result['success'] == true) {
-          setState(() { _otpSent = true; });
+          setState(() {
+            _otpSent = true;
+          });
           _showSnackbar('OTP sent! For demo, use: 123456');
         } else {
-          setState(() { _errorMessage = result['message']; });
+          setState(() {
+            _errorMessage = result['message'];
+          });
         }
       } else {
         final result = await AuthService().verifyOTP(
@@ -63,13 +81,20 @@ class _LoginScreenState extends State<LoginScreen> {
         if (result['success'] == true && mounted) {
           Navigator.pushReplacementNamed(context, '/home');
         } else {
-          setState(() { _errorMessage = result['message'] ?? 'Invalid OTP'; });
+          setState(() {
+            _errorMessage = result['message'] ?? 'Invalid OTP';
+          });
         }
       }
     } catch (e) {
-      setState(() { _errorMessage = 'Connection error'; });
+      setState(() {
+        _errorMessage = 'Connection error';
+      });
     } finally {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -89,13 +114,17 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 60),
-              const Icon(Icons.local_hospital, size: 64, color: AppTheme.primaryLight),
+              const Icon(Icons.local_hospital,
+                  size: 64, color: AppTheme.primaryLight),
               const SizedBox(height: 16),
-              const Text('Welcome Back', textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const Text('Welcome Back',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text('Sign in to your patient account', textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: AppTheme.textSecondary)),
+              const Text('Sign in to your patient account',
+                  textAlign: TextAlign.center,
+                  style:
+                      TextStyle(fontSize: 16, color: AppTheme.textSecondary)),
               const SizedBox(height: 48),
 
               // Phone field
@@ -155,15 +184,19 @@ class _LoginScreenState extends State<LoginScreen> {
               // Error message
               if (_errorMessage != null) ...[
                 const SizedBox(height: 16),
-                Text(_errorMessage!, style: const TextStyle(color: AppTheme.danger),
-                  textAlign: TextAlign.center),
+                Text(_errorMessage!,
+                    style: const TextStyle(color: AppTheme.danger),
+                    textAlign: TextAlign.center),
               ],
 
               const SizedBox(height: 24),
 
               // Toggle OTP/Password mode
               TextButton(
-                onPressed: () => setState(() { _otpMode = !_otpMode; _otpSent = false; }),
+                onPressed: () => setState(() {
+                  _otpMode = !_otpMode;
+                  _otpSent = false;
+                }),
                 child: Text(_otpMode ? 'Use Password Login' : 'Use OTP Login'),
               ),
 
@@ -182,9 +215,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppTheme.border),
                 ),
-                child: Text('Demo: Phone 9876543210 | Pass test123\nOTP: 123456',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                child: const Text(
+                    'Demo: Phone 9876543210 | Pass test123\nOTP: 123456',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
               ),
             ],
           ),

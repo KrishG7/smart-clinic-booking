@@ -25,17 +25,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadProfile() async {
     final user = await AuthService().getUser();
-    setState(() { _user = user; });
+    setState(() {
+      _user = user;
+    });
 
     try {
       final result = await ApiService().get('/patients/me');
       if (result['success'] == true) {
-        setState(() { _patient = result['patient']; });
+        setState(() {
+          _patient = result['patient'];
+        });
       }
     } catch (e) {
       // Offline — use cached user data
     } finally {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -62,23 +69,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: AppTheme.primaryLight,
                     child: Text(
                       (_user?['name'] ?? 'U')[0].toUpperCase(),
-                      style: const TextStyle(fontSize: 36, color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 36,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(_user?['name'] ?? 'User', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                  Text(_user?['role'] ?? 'patient', style: TextStyle(color: AppTheme.textSecondary)),
+                  Text(_user?['name'] ?? 'User',
+                      style: const TextStyle(
+                          fontSize: 22, fontWeight: FontWeight.bold)),
+                  Text(_user?['role'] ?? 'patient',
+                      style: const TextStyle(color: AppTheme.textSecondary)),
                   const SizedBox(height: 32),
 
                   // Info Cards
                   _buildInfoTile(Icons.phone, 'Phone', _user?['phone'] ?? '--'),
-                  _buildInfoTile(Icons.email, 'Email', _user?['email'] ?? 'Not set'),
+                  _buildInfoTile(
+                      Icons.email, 'Email', _user?['email'] ?? 'Not set'),
                   if (_patient != null) ...[
-                    _buildInfoTile(Icons.cake, 'Date of Birth', _patient?['date_of_birth'] ?? 'Not set'),
-                    _buildInfoTile(Icons.person, 'Gender', _patient?['gender'] ?? 'Not set'),
-                    _buildInfoTile(Icons.water_drop, 'Blood Group', _patient?['blood_group'] ?? 'Not set'),
-                    _buildInfoTile(Icons.location_on, 'Address', _patient?['address'] ?? 'Not set'),
-                    _buildInfoTile(Icons.emergency, 'Emergency Contact', _patient?['emergency_contact'] ?? 'Not set'),
+                    _buildInfoTile(Icons.cake, 'Date of Birth',
+                        _patient?['date_of_birth'] ?? 'Not set'),
+                    _buildInfoTile(Icons.person, 'Gender',
+                        _patient?['gender'] ?? 'Not set'),
+                    _buildInfoTile(Icons.water_drop, 'Blood Group',
+                        _patient?['blood_group'] ?? 'Not set'),
+                    _buildInfoTile(Icons.location_on, 'Address',
+                        _patient?['address'] ?? 'Not set'),
+                    _buildInfoTile(Icons.emergency, 'Emergency Contact',
+                        _patient?['emergency_contact'] ?? 'Not set'),
                   ],
                   const SizedBox(height: 32),
 
@@ -117,7 +136,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+              Text(label,
+                  style:
+                      const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
               Text(value, style: const TextStyle(fontSize: 15)),
             ],
           ),

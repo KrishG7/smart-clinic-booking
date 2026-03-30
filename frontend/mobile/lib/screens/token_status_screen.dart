@@ -23,17 +23,24 @@ class _TokenStatusScreenState extends State<TokenStatusScreen> {
   }
 
   Future<void> _loadTokens() async {
-    setState(() { _loading = true; });
+    setState(() {
+      _loading = true;
+    });
 
     try {
       final result = await ApiService().get('/tokens/my');
       if (result['success'] == true) {
-        setState(() { _tokens = result['tokens'] ?? []; });
+        setState(() {
+          _tokens = result['tokens'] ?? [];
+        });
       }
     } catch (e) {
       // Handle offline
     } finally {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -44,13 +51,17 @@ class _TokenStatusScreenState extends State<TokenStatusScreen> {
         'longitude': 77.2090,
       });
 
+      if (!mounted) return; // widget may have been disposed during the await
       if (result['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('✅ Check-in successful!'), backgroundColor: AppTheme.success),
+          const SnackBar(
+              content: Text('✅ Check-in successful!'),
+              backgroundColor: AppTheme.success),
         );
         _loadTokens();
       }
     } catch (e) {
+      if (!mounted) return; // guard before using context
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Check-in failed: ${e.toString()}')),
       );
@@ -75,12 +86,16 @@ class _TokenStatusScreenState extends State<TokenStatusScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.confirmation_number_outlined, size: 64, color: AppTheme.textMuted),
+                        const Icon(Icons.confirmation_number_outlined,
+                            size: 64, color: AppTheme.textMuted),
                         const SizedBox(height: 16),
-                        Text('No tokens for today', style: TextStyle(color: AppTheme.textMuted, fontSize: 16)),
+                        const Text('No tokens for today',
+                            style: TextStyle(
+                                color: AppTheme.textMuted, fontSize: 16)),
                         const SizedBox(height: 8),
                         ElevatedButton(
-                          onPressed: () => Navigator.pushNamed(context, '/booking'),
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/booking'),
                           child: const Text('Book Appointment'),
                         ),
                       ],

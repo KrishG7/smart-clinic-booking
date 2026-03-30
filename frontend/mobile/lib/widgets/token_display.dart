@@ -25,11 +25,16 @@ class TokenDisplay extends StatelessWidget {
 
   Color get _statusColor {
     switch (status) {
-      case 'waiting': return AppTheme.warning;
-      case 'in_progress': return AppTheme.primaryLight;
-      case 'completed': return AppTheme.success;
-      case 'emergency': return AppTheme.danger;
-      default: return AppTheme.textMuted;
+      case 'waiting':
+        return AppTheme.warning;
+      case 'in_progress':
+        return AppTheme.primaryLight;
+      case 'completed':
+        return AppTheme.success;
+      case 'emergency':
+        return AppTheme.danger;
+      default:
+        return AppTheme.textMuted;
     }
   }
 
@@ -45,7 +50,8 @@ class TokenDisplay extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 60, height: 60,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     color: AppTheme.primaryLight.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(12),
@@ -53,7 +59,10 @@ class TokenDisplay extends StatelessWidget {
                   child: Center(
                     child: Text(
                       '#$tokenNumber',
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppTheme.primaryLight),
+                      style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryLight),
                     ),
                   ),
                 ),
@@ -62,20 +71,28 @@ class TokenDisplay extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(doctorName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                      Text(specialization, style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                      Text(doctorName,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600)),
+                      Text(specialization,
+                          style: const TextStyle(
+                              color: AppTheme.textSecondary, fontSize: 13)),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: _statusColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     status.toUpperCase(),
-                    style: TextStyle(color: _statusColor, fontSize: 11, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                        color: _statusColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -116,9 +133,11 @@ class TokenDisplay extends StatelessWidget {
   Widget _buildInfoItem(String label, String value) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+        Text(label,
+            style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
       ],
     );
   }

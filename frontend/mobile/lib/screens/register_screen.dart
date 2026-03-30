@@ -24,7 +24,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleRegister() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() { _loading = true; _errorMessage = null; });
+    setState(() {
+      _loading = true;
+      _errorMessage = null;
+    });
 
     try {
       final result = await AuthService().register({
@@ -38,12 +41,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (result['success'] == true && mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       } else {
-        setState(() { _errorMessage = result['message'] ?? 'Registration failed'; });
+        setState(() {
+          _errorMessage = result['message'] ?? 'Registration failed';
+        });
       }
     } catch (e) {
-      setState(() { _errorMessage = 'Connection error'; });
+      setState(() {
+        _errorMessage = 'Connection error';
+      });
     } finally {
-      if (mounted) setState(() { _loading = false; });
+      if (mounted)
+        setState(() {
+          _loading = false;
+        });
     }
   }
 
@@ -59,42 +69,59 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('Register', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const Text('Register',
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text('Create your patient account', style: TextStyle(color: AppTheme.textSecondary)),
+                const Text('Create your patient account',
+                    style: TextStyle(color: AppTheme.textSecondary)),
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Full Name', prefixIcon: Icon(Icons.person)),
-                  validator: (v) => v == null || v.isEmpty ? 'Name is required' : null,
+                  decoration: const InputDecoration(
+                      labelText: 'Full Name', prefixIcon: Icon(Icons.person)),
+                  validator: (v) =>
+                      v == null || v.isEmpty ? 'Name is required' : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(labelText: 'Phone Number', prefixIcon: Icon(Icons.phone)),
-                  validator: (v) => v == null || v.length < 10 ? 'Valid phone required' : null,
+                  decoration: const InputDecoration(
+                      labelText: 'Phone Number', prefixIcon: Icon(Icons.phone)),
+                  validator: (v) => v == null || v.length < 10
+                      ? 'Valid phone required'
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(labelText: 'Email (Optional)', prefixIcon: Icon(Icons.email)),
+                  decoration: const InputDecoration(
+                      labelText: 'Email (Optional)',
+                      prefixIcon: Icon(Icons.email)),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: const InputDecoration(labelText: 'Password', prefixIcon: Icon(Icons.lock)),
-                  validator: (v) => v == null || v.length < 6 ? 'Min 6 characters' : null,
+                  decoration: const InputDecoration(
+                      labelText: 'Password', prefixIcon: Icon(Icons.lock)),
+                  validator: (v) =>
+                      v == null || v.length < 6 ? 'Min 6 characters' : null,
                 ),
                 const SizedBox(height: 24),
                 if (_errorMessage != null)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: Text(_errorMessage!, style: const TextStyle(color: AppTheme.danger), textAlign: TextAlign.center),
+                    child: Text(_errorMessage!,
+                        style: const TextStyle(color: AppTheme.danger),
+                        textAlign: TextAlign.center),
                   ),
-                CustomButton(text: 'Register', onPressed: _handleRegister, isLoading: _loading),
+                CustomButton(
+                    text: 'Register',
+                    onPressed: _handleRegister,
+                    isLoading: _loading),
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: () => Navigator.pop(context),
