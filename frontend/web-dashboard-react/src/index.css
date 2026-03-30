@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-900 text-white font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-slate-800/60 backdrop-blur-xl border border-slate-700/50 shadow-glass-card rounded-2xl;
+  }
+  .glass-button {
+    @apply bg-brand-600/90 hover:bg-brand-500 backdrop-blur-md border border-brand-500/50 shadow-glass hover:shadow-glass-hover text-white rounded-xl transition-all duration-300 transform hover:-translate-y-1;
+  }
+}
