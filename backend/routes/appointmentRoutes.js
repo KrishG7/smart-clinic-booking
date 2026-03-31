@@ -10,12 +10,13 @@ const {
     getDoctorAppointments, updateStatus, cancelAppointment, getStats
 } = require('../controllers/appointmentController');
 const { authenticate, authorize } = require('../middleware/authMiddleware');
+const { validateAppointment } = require('../middleware/validator');
 
 // All routes require authentication
 router.use(authenticate);
 
 // Patient routes
-router.post('/', bookAppointment);
+router.post('/', validateAppointment, bookAppointment);
 router.get('/my', getMyAppointments);
 
 // Doctor/Staff routes
