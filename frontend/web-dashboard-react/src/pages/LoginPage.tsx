@@ -263,7 +263,7 @@ export const LoginPage: React.FC = () => {
           ) : (
             <form onSubmit={handleOtpSubmit} className="space-y-5">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-300 block">Phone Mumber</label>
+                <label className="text-sm font-medium text-slate-300 block">Phone Number</label>
                 <div className="relative">
                   <Phone className="w-5 h-5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required disabled={otpSent} placeholder="9876543210" className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-white outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all font-mono disabled:opacity-50" />
