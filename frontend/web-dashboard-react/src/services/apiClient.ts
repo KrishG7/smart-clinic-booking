@@ -24,8 +24,14 @@ export const apiClient = async (endpoint: string, options: FetchOptions = {}) =>
     },
   });
 
-  if (response.status === 401) {
-    // Session expired globally
+  // Only auto-redirect on 401 if the user HAD a token (session expired).
+  // Auth endpoints (login, register, etc.) legitimately return 401 for bad credentials.
+  const isAuthEndpoint = endpoint.startsWith('/auth/login') ||
+                         endpoint.startsWith('/auth/register') ||
+                         endpoint.startsWith('/auth/verify-otp') ||
+                         endpoint.startsWith('/auth/send-otp');
+
+  if (response.status === 401 && token && !isAuthEndpoint) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/login';
