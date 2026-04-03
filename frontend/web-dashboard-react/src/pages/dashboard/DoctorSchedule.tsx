@@ -10,9 +10,19 @@ export const DoctorSchedule: React.FC = () => {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
+        // 1. Find this user's doctor profile ID
+        const meRes = await apiClient('/auth/me');
+        const userId = meRes?.user?.id;
+        const docRes = await apiClient('/doctors');
+        let docId = 1;
+        if (docRes.success && Array.isArray(docRes.doctors)) {
+          const mine = docRes.doctors.find((d: any) => d.user_id === userId);
+          if (mine) docId = mine.id;
+        }
+
+        // 2. Fetch today's schedule for that doctor
         const today = new Date().toISOString().split('T')[0];
-        // Note: Replace 1 with actual mapped doctor user ID if needed over time
-        const res = await apiClient(`/appointments/doctor/1?date=${today}`);
+        const res = await apiClient(`/appointments/doctor/${docId}?date=${today}`);
         if (res.success) setAppointments(res.appointments || []);
       } catch (e) {
         console.error(e);

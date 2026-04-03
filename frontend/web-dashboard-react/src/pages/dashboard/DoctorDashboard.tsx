@@ -10,13 +10,33 @@ interface Props {
 export const DoctorDashboard: React.FC<Props> = ({ user }) => {
   const [queue, setQueue] = useState<any[]>([]);
   const [currentToken, setCurrentToken] = useState<any>(null);
+  const [doctorId, setDoctorId] = useState<number | null>(null);
+
+  // Fetch the actual doctor record so we get the doctors.id (not users.id)
+  useEffect(() => {
+    const loadDoctorId = async () => {
+      try {
+        // GET /api/doctors returns all doctors; find the one whose user_id matches
+        const res = await apiClient('/doctors');
+        if (res.success && Array.isArray(res.doctors)) {
+          const mine = res.doctors.find((d: any) => d.user_id === user.id);
+          setDoctorId(mine?.id ?? 1); // fallback 1 for demo
+        }
+      } catch (e) {
+        setDoctorId(1);
+      }
+    };
+    loadDoctorId();
+  }, [user.id]);
 
   const fetchData = async () => {
+    if (!doctorId) return;
     try {
-      const qRes = await apiClient(`/tokens/queue/${user.id || 1}`); // fallback 1 for demo
+      // Queue API returns: { success, doctorId, currentToken, queueLength, queue }
+      const qRes = await apiClient(`/tokens/queue/${doctorId}`);
       if (qRes.success) {
-        setQueue(qRes.data.queue || []);
-        setCurrentToken(qRes.data.currentToken);
+        setQueue(qRes.queue || []);
+        setCurrentToken(qRes.currentToken ?? null);
       }
     } catch (e) {
       console.error(e);
@@ -24,19 +44,20 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
   };
 
   useEffect(() => {
+    if (!doctorId) return;
     fetchData();
     const intv = setInterval(fetchData, 10000);
     return () => clearInterval(intv);
-  }, []);
+  }, [doctorId]);
 
   const callNextPatient = async () => {
     try {
       const res = await apiClient('/tokens/next', {
         method: 'POST',
-        body: JSON.stringify({ doctorId: user.id || 1 })
+        body: JSON.stringify({ doctorId: doctorId || 1 })
       });
       if (res.success) fetchData();
-      else alert(res.message);
+      else alert(res.message || 'Failed to call next token');
     } catch {
       alert('Error calling next token');
     }

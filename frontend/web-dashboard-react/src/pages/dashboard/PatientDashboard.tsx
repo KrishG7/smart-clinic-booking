@@ -8,7 +8,7 @@ export const PatientDashboard: React.FC<{setActiveTab: any}> = ({setActiveTab}) 
   const fetchData = async () => {
     try {
       const tRes = await apiClient('/tokens/my');
-      if (tRes.success) setMyToken(tRes.data);
+      if (tRes.success) setMyToken(tRes.tokens?.[0] ?? null);
     } catch (e) {
       console.error(e);
     }

@@ -9,7 +9,7 @@ export const PatientHistory: React.FC = () => {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const res = await apiClient('/appointments/patient');
+        const res = await apiClient('/appointments/my');
         if (res.success) setAppointments(res.appointments || []);
       } catch (e) {
         console.error(e);
