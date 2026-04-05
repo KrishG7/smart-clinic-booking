@@ -54,7 +54,7 @@ A comprehensive **Healthcare Management System** with **Live Token Generation** 
 | Layer | Technology |
 |---|---|
 | Mobile App (Patient) | Flutter (Dart) |
-| Web Dashboard (Doctor/Staff) | HTML, CSS, JavaScript |
+| Web Dashboard (Doctor/Staff) | React (TypeScript) |
 | Backend API | Node.js + Express.js |
 | Cloud Database | MySQL |
 | Local Database | SQLite |
@@ -78,7 +78,7 @@ smart-clinic-booking/
 │   └── tests/                # Unit tests
 ├── frontend/
 │   ├── mobile/               # Flutter patient mobile app
-│   └── web-dashboard/        # Doctor/Staff web dashboard
+│   └── web-dashboard-react/   # Doctor/Staff web dashboard (React + TypeScript)
 ├── database/
 │   ├── schema.sql            # Complete database schema
 │   ├── seed.sql              # Sample data for testing
@@ -132,7 +132,10 @@ flutter pub get
 ```
 
 ### 5. Set Up the Web Dashboard
-The web dashboard is a static HTML/CSS/JS application. No build step required — simply open `frontend/web-dashboard/index.html` in a browser, or serve it with any static file server.
+```bash
+cd frontend/web-dashboard-react
+npm install
+```
 
 ---
 
@@ -152,10 +155,10 @@ flutter run
 ```
 
 ### Web Dashboard
-Open `frontend/web-dashboard/login.html` in your browser, or use a local server:
 ```bash
-cd frontend/web-dashboard
-npx serve .
+cd frontend/web-dashboard-react
+npm run dev
+# Dashboard runs on http://localhost:5173
 ```
 
 ---
