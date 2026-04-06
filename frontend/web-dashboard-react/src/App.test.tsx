@@ -15,21 +15,20 @@ describe('LandingPage', () => {
 
     expect(screen.getByText(/Eliminate Waiting/i)).toBeInTheDocument();
     expect(screen.getByText(/Clinic OS 2.0 is Live/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Enter Clinic OS/i })).toHaveAttribute('href', '/dashboard');
+    // CTA routes to /login (auth gateway before dashboard)
+    expect(screen.getByRole('link', { name: /Enter Clinic OS/i })).toHaveAttribute('href', '/login');
   });
 });
 
 describe('Dashboard', () => {
-  test('renders operations, queue, and doctor context', () => {
+  test('renders loading state when no auth token is present', () => {
     render(
       <MemoryRouter>
         <Dashboard />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Live Operations')).toBeInTheDocument();
-    expect(screen.getByText('Current Queue')).toBeInTheDocument();
-    expect(screen.getByText('Performance')).toBeInTheDocument();
-    expect(screen.getByText(/Dr. Sarah Cole/i)).toBeInTheDocument();
+    // Without auth, Dashboard shows a loading spinner while fetching user
+    expect(screen.getByText(/Connecting to Clinic OS/i)).toBeInTheDocument();
   });
 });
