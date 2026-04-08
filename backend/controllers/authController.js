@@ -15,7 +15,7 @@ const { successResponse, errorResponse } = require('../utils/helpers');
  */
 async function register(req, res) {
     try {
-        const { name, phone, email, role, password, specialization, qualification, experienceYears, consultationFee } = req.body;
+        const { name, phone, email, role, password, specialization, qualification, clinicAddress, experienceYears, consultationFee } = req.body;
 
         // Check if user already exists
         const existing = await query('SELECT id FROM users WHERE phone = ?', [phone]);
@@ -45,8 +45,8 @@ async function register(req, res) {
         // Create role-specific profile
         if (role === ROLES.DOCTOR) {
             await query(
-                'INSERT INTO doctors (user_id, specialization, qualification, experience_years, consultation_fee) VALUES (?, ?, ?, ?, ?)',
-                [userId, specialization || 'General Medicine', qualification || '', experienceYears || 0, consultationFee || 500]
+                'INSERT INTO doctors (user_id, specialization, qualification, clinic_address, experience_years, consultation_fee) VALUES (?, ?, ?, ?, ?, ?)',
+                [userId, specialization || 'General Medicine', qualification || '', clinicAddress || '', experienceYears || 0, consultationFee || 500]
             );
 
             successResponse(res, {

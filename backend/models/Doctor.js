@@ -11,17 +11,17 @@ class Doctor {
      */
     static async create(doctorData) {
         const {
-            userId, specialization, qualification, experienceYears,
+            userId, specialization, qualification, clinicAddress, experienceYears,
             consultationFee, maxPatientsPerDay, availableDays,
             slotStartTime, slotEndTime, slotDurationMinutes
         } = doctorData;
 
         const result = await query(
-            `INSERT INTO doctors (user_id, specialization, qualification, experience_years,
+            `INSERT INTO doctors (user_id, specialization, qualification, clinic_address, experience_years,
        consultation_fee, max_patients_per_day, available_days, slot_start_time,
        slot_end_time, slot_duration_minutes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [userId, specialization, qualification, experienceYears || 0,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [userId, specialization, qualification, clinicAddress, experienceYears || 0,
                 consultationFee || 0, maxPatientsPerDay || 30, availableDays || 'Mon,Tue,Wed,Thu,Fri',
                 slotStartTime || '09:00:00', slotEndTime || '17:00:00', slotDurationMinutes || 15]
         );
@@ -93,6 +93,7 @@ class Doctor {
         const fieldMapping = {
             specialization: 'specialization',
             qualification: 'qualification',
+            clinicAddress: 'clinic_address',
             experienceYears: 'experience_years',
             consultationFee: 'consultation_fee',
             maxPatientsPerDay: 'max_patients_per_day',

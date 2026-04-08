@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import type { AuthResponse } from '../services/authService';
-import { ArrowRight, Activity, ShieldCheck, Mail, Lock, Phone, User as UserIcon } from 'lucide-react';
+import { ArrowRight, Activity, ShieldCheck, Mail, Lock, Phone, User as UserIcon, MapPin, Award, Stethoscope } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
   const [isOtpMode, setIsOtpMode] = useState(false);
@@ -20,8 +20,42 @@ export const LoginPage: React.FC = () => {
   const [regName, setRegName] = useState('');
   const [regRole, setRegRole] = useState<'patient' | 'doctor'>('patient');
   const [regSuccessMessage, setRegSuccessMessage] = useState<string | null>(null);
+  const [regSpecialization, setRegSpecialization] = useState('');
+  const [regQualification, setRegQualification] = useState('');
+  const [regClinicAddress, setRegClinicAddress] = useState('');
+  const [detectingLocation, setDetectingLocation] = useState(false);
   
   const navigate = useNavigate();
+
+  const handleAutoDetectLocation = () => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser");
+      return;
+    }
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          if (data && data.display_name) {
+            setRegClinicAddress(data.display_name);
+          } else {
+            setRegClinicAddress(`${latitude}, ${longitude}`);
+          }
+        } catch (err) {
+          setError("Failed to geocode location.");
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      () => {
+        setError("Unable to retrieve your location");
+        setDetectingLocation(false);
+      }
+    );
+  };
 
   const handleAuthRedirect = (res: AuthResponse) => {
     if (res.success && res.token && res.user) {
@@ -57,6 +91,11 @@ export const LoginPage: React.FC = () => {
         phone,
         password,
         role: regRole,
+        ...(regRole === 'doctor' && {
+          specialization: regSpecialization || 'General Medicine',
+          qualification: regQualification,
+          clinicAddress: regClinicAddress,
+        })
       };
       const res = await authService.register(payload);
       if (res.success) {
@@ -231,6 +270,38 @@ export const LoginPage: React.FC = () => {
                   <input type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-white outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all" />
                 </div>
               </div>
+
+              {regRole === 'doctor' && (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-slate-300 block">Specialization</label>
+                    <div className="relative">
+                      <Stethoscope className="w-5 h-5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input type="text" value={regSpecialization} onChange={e => setRegSpecialization(e.target.value)} required placeholder="e.g. Cardiology" className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-white outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all font-medium" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-slate-300 block">Qualification</label>
+                    <div className="relative">
+                      <Award className="w-5 h-5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input type="text" value={regQualification} onChange={e => setRegQualification(e.target.value)} required placeholder="e.g. MBBS, MD" className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-white outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all font-medium" />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-end mb-1">
+                      <label className="text-sm font-medium text-slate-300 block">Clinic Address</label>
+                      <button type="button" onClick={handleAutoDetectLocation} disabled={detectingLocation} className="text-xs text-brand-400 hover:text-brand-300 disabled:opacity-50 flex items-center gap-1 font-semibold transition-colors">
+                        <MapPin className="w-3 h-3" />
+                        {detectingLocation ? 'Detecting...' : 'Auto Detect'}
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <MapPin className="w-5 h-5 text-slate-500 absolute left-3 top-3" />
+                      <textarea value={regClinicAddress} onChange={e => setRegClinicAddress(e.target.value)} required placeholder="123 Health Ave, Medical District" rows={2} className="w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-800 rounded-xl text-white outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all font-medium resize-none" />
+                    </div>
+                  </div>
+                </>
+              )}
 
               <button type="submit" disabled={loading} className="w-full mt-4 py-3.5 glass-button shadow-brand-500/20 shadow-lg text-white font-bold rounded-xl flex justify-center items-center gap-2">
                 {loading ? 'Creating Account...' : 'Sign Up Securely'} <ArrowRight className="w-4 h-4" />

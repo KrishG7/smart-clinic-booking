@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS doctors (
     user_id INT NOT NULL,
     specialization VARCHAR(100) NOT NULL,
     qualification VARCHAR(200),
+    clinic_address TEXT,
     experience_years INT DEFAULT 0,
     consultation_fee DECIMAL(10, 2) DEFAULT 0.00,
     max_patients_per_day INT DEFAULT 30,
