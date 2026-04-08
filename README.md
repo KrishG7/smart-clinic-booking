@@ -197,12 +197,12 @@ Full API documentation is available in [`docs/api-documentation.md`](docs/api-do
 
 | Name | Roll Number | Role |
 |---|---|---|
-| Krish Gupta | 24293916007 | Project Lead, Backend Core |
-| Yuvraj Dahiya | 24293916069 | Backend API Developer |
-| Amandeep Singh | 24293916067 | Web Dashboard Developer |
-| Mukul Chauhan | 24293916062 | Database & Models |
-| Daksh Dahiya | 24293916060 | Documentation & Testing |
-| Himanshu Chhillar | 24293916028 | Flutter UI & Middleware |
+| Krish Gupta | 24293916007 | Lead Developer & Core Architect |
+| Mukul Chauhan | 24293916062 | Mobile Developer (Flutter) |
+| Amandeep Singh | 24293916067 | Web Frontend Developer (React) |
+| Himanshu Chhillar | 24293916028 | Backend Logic & Testing |
+| Daksh Dahiya | 24293916060 | API Routing & Middleware |
+| Yuvraj Dahiya | 24293916069 | Data Layer & Database Models |
 
 ---
 
