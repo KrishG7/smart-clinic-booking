@@ -37,10 +37,11 @@ class _PrescriptionScreenState extends State<PrescriptionScreen> {
     } catch (e) {
       // Handle offline
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 

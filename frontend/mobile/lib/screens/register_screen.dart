@@ -50,10 +50,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _errorMessage = 'Connection error';
       });
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 

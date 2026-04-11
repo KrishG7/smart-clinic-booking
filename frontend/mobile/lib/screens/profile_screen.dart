@@ -39,10 +39,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       // Offline — use cached user data
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 

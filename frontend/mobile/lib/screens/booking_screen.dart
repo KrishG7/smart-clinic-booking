@@ -127,10 +127,11 @@ class _BookingScreenState extends State<BookingScreen> {
       _showSnackbar('📱 Saved offline! Will sync when online.');
       Navigator.pop(context);
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 

@@ -62,7 +62,7 @@ void main() {
     test('1. Validated JWTs securely route entirely to the AES Vault via saveSessionCache', () async {
       // Act
       final dummyUser = {'id': 99, 'name': 'Patient Alpha'};
-      final dummyToken = 'eyJhbGciOiJIUzI1NiIsIn...';
+      const dummyToken = 'eyJhbGciOiJIUzI1NiIsIn...';
       
       await authService.saveSessionCache(dummyToken, dummyUser);
 

@@ -37,10 +37,11 @@ class _TokenStatusScreenState extends State<TokenStatusScreen> {
     } catch (e) {
       // Handle offline
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 

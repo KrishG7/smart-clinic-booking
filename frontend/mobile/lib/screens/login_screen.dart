@@ -45,10 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _errorMessage = 'Connection error. Is the server running?';
       });
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 
@@ -91,10 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
         _errorMessage = 'Connection error';
       });
     } finally {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _loading = false;
         });
+      }
     }
   }
 

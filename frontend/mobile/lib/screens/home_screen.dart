@@ -260,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const Spacer(),
           Text(token['doctor_name'] ?? 'Doctor', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
-          Text('\~${token['estimated_wait_minutes'] ?? 0} mins left', style: const TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
+          Text('~${token['estimated_wait_minutes'] ?? 0} mins left', style: const TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
         ],
       ),
     );
