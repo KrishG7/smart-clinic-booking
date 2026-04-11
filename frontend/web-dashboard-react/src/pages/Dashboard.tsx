@@ -27,7 +27,7 @@ export const Dashboard: React.FC = () => {
         } else {
           authService.logout();
         }
-      } catch (_e) {
+      } catch {
         authService.logout();
       } finally {
         setLoading(false);

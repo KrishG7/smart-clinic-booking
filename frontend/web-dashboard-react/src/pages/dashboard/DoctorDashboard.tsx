@@ -9,6 +9,7 @@ interface Props {
 
 export const DoctorDashboard: React.FC<Props> = ({ user }) => {
   const [queue, setQueue] = useState<unknown[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentToken, setCurrentToken] = useState<any>(null);
   const [doctorId, setDoctorId] = useState<number | null>(null);
 
@@ -19,10 +20,11 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
         // GET /api/doctors returns all doctors; find the one whose user_id matches
         const res = await apiClient('/doctors');
         if (res.success && Array.isArray(res.doctors)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mine = res.doctors.find((d: any) => d.user_id === user.id);
           setDoctorId(mine?.id ?? 1); // fallback 1 for demo
         }
-      } catch (_e) {
+      } catch {
         setDoctorId(1);
       }
     };
@@ -99,6 +101,7 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
 
         <div className="flex flex-col gap-3">
           {queue.length === 0 && <p className="text-slate-500 py-6 text-center italic">No patients waiting in queue.</p>}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {queue.map((patient: any) => (
             <div key={patient.tokenNumber} className="group relative flex justify-between items-center p-4 rounded-xl border border-slate-700/50 bg-slate-900/50 hover:bg-slate-800 transition-colors shadow-none hover:shadow-glass-card">
               <div className="flex items-center gap-4">

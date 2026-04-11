@@ -44,7 +44,7 @@ export const LoginPage: React.FC = () => {
           } else {
             setRegClinicAddress(`${latitude}, ${longitude}`);
           }
-        } catch (_err) {
+        } catch {
           setError("Failed to geocode location.");
         } finally {
           setDetectingLocation(false);
@@ -75,7 +75,7 @@ export const LoginPage: React.FC = () => {
     try {
       const res = await authService.login(phone, password);
       handleAuthRedirect(res);
-    } catch (_err) {
+    } catch {
       setError('Connection refused. Is WaitZero API running?');
       setLoading(false);
     }
@@ -110,7 +110,7 @@ export const LoginPage: React.FC = () => {
         setError(res.message || 'Registration failed.');
         setLoading(false);
       }
-    } catch (_err) {
+    } catch {
       setError('Connection refused.');
       setLoading(false);
     }
@@ -134,7 +134,7 @@ export const LoginPage: React.FC = () => {
         const res = await authService.verifyOtp(phone, otp);
         handleAuthRedirect(res);
       }
-    } catch (_err) {
+    } catch {
       setError('Connection Error.');
       setLoading(false);
     }
@@ -150,7 +150,7 @@ export const LoginPage: React.FC = () => {
     try {
       const res = await authService.login(p, 'test123');
       handleAuthRedirect(res);
-    } catch (_err) {
+    } catch {
       setError('Demo failed.');
       setLoading(false);
     }
