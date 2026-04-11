@@ -53,7 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppTheme.bgPrimary,
       appBar: AppBar(
-        title: const Text('Wait Zero', style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+        title: const Text('Wait Zero',
+            style: TextStyle(fontWeight: FontWeight.w800, letterSpacing: -0.5)),
         automaticallyImplyLeading: false,
         elevation: 0,
         actions: [
@@ -82,17 +83,22 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               // Greeting Section
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Hello, ${_user?['name']?.split(' ')[0] ?? 'Patient'} 👋',
-                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, fontFamily: 'Inter'),
+                      style: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Inter'),
                     ),
                     const SizedBox(height: 8),
                     const Text('Ready to skip the waiting room?',
-                        style: TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
+                        style: TextStyle(
+                            color: AppTheme.textSecondary, fontSize: 16)),
                   ],
                 ),
               ),
@@ -105,9 +111,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   physics: const BouncingScrollPhysics(),
                   children: [
-                    _buildQuickAction(Icons.calendar_today, 'Book', 'Appointment', AppTheme.primaryLight, () => Navigator.pushNamed(context, '/booking')),
-                    _buildQuickAction(Icons.confirmation_number, 'Live', 'Tokens', AppTheme.success, () => Navigator.pushNamed(context, '/token-status')),
-                    _buildQuickAction(Icons.medical_services, 'My', 'Rx', AppTheme.secondary, () => Navigator.pushNamed(context, '/prescriptions')),
+                    _buildQuickAction(
+                        Icons.calendar_today,
+                        'Book',
+                        'Appointment',
+                        AppTheme.primaryLight,
+                        () => Navigator.pushNamed(context, '/booking')),
+                    _buildQuickAction(
+                        Icons.confirmation_number,
+                        'Live',
+                        'Tokens',
+                        AppTheme.success,
+                        () => Navigator.pushNamed(context, '/token-status')),
+                    _buildQuickAction(
+                        Icons.medical_services,
+                        'My',
+                        'Rx',
+                        AppTheme.secondary,
+                        () => Navigator.pushNamed(context, '/prescriptions')),
                   ],
                 ),
               ),
@@ -119,10 +140,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Active Tokens', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                    const Text('Active Tokens',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w800)),
                     TextButton(
-                      onPressed: () => Navigator.pushNamed(context, '/token-status'),
-                      child: const Text('View All', style: TextStyle(color: AppTheme.primaryLight, fontWeight: FontWeight.bold)),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, '/token-status'),
+                      child: const Text('View All',
+                          style: TextStyle(
+                              color: AppTheme.primaryLight,
+                              fontWeight: FontWeight.bold)),
                     )
                   ],
                 ),
@@ -133,14 +160,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: _todayTokens.isEmpty
                     ? Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: _buildEmptyCard('No active tokens today.', Icons.check_circle_outline),
+                        child: _buildEmptyCard('No active tokens today.',
+                            Icons.check_circle_outline),
                       )
                     : ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         physics: const BouncingScrollPhysics(),
                         itemCount: _todayTokens.length,
-                        itemBuilder: (context, index) => _buildTokenCard(_todayTokens[index]),
+                        itemBuilder: (context, index) =>
+                            _buildTokenCard(_todayTokens[index]),
                       ),
               ),
 
@@ -149,15 +178,22 @@ class _HomeScreenState extends State<HomeScreen> {
               // Appointments List
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text('Upcoming', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                child: Text('Upcoming',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
               ),
               const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: _upcomingAppointments.isEmpty
-                    ? _buildEmptyCard('No upcoming appointments.', Icons.calendar_month)
+                    ? _buildEmptyCard(
+                        'No upcoming appointments.', Icons.calendar_month)
                     : Column(
-                        children: _upcomingAppointments.take(4).map((apt) => _buildAppointmentCard(apt)).toList(),
+                        children: _upcomingAppointments
+                            .take(4)
+                            .map((apt) => _buildAppointmentCard(apt))
+                            .toList(),
                       ),
               ),
               const SizedBox(height: 40),
@@ -166,11 +202,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -10))
-          ]
-        ),
+        decoration: BoxDecoration(boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -10))
+        ]),
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: (index) {
@@ -187,17 +224,22 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: AppTheme.surface,
           type: BottomNavigationBarType.fixed,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.add_box_rounded), label: 'Book'),
-            BottomNavigationBarItem(icon: Icon(Icons.dynamic_feed), label: 'Queue'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_filled), label: 'Home'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.add_box_rounded), label: 'Book'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.dynamic_feed), label: 'Queue'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_rounded), label: 'Profile'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildQuickAction(IconData icon, String title, String subtitle, Color color, VoidCallback onTap) {
+  Widget _buildQuickAction(IconData icon, String title, String subtitle,
+      Color color, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Hero(
@@ -207,9 +249,9 @@ class _HomeScreenState extends State<HomeScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
+            color: color.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: color.withOpacity(0.2)),
+            border: Border.all(color: color.withValues(alpha: 0.2)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,8 +259,14 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Icon(icon, color: color, size: 28),
               const Spacer(),
-              Text(title, style: TextStyle(fontSize: 14, color: color, fontWeight: FontWeight.bold)),
-              Text(subtitle, style: TextStyle(fontSize: 12, color: color.withOpacity(0.8), fontWeight: FontWeight.w600)),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14, color: color, fontWeight: FontWeight.bold)),
+              Text(subtitle,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: color.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w600)),
             ],
           ),
         ),
@@ -236,9 +284,12 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: AppTheme.primary.withOpacity(0.08), blurRadius: 24, offset: const Offset(0, 8))
+          BoxShadow(
+              color: AppTheme.primary.withValues(alpha: 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8))
         ],
-        border: Border.all(color: AppTheme.border.withOpacity(0.5)),
+        border: Border.all(color: AppTheme.border.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,20 +298,39 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: AppTheme.bgSecondary, borderRadius: BorderRadius.circular(12)),
-                child: Text('#$tokenNumber', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppTheme.primaryLight)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                    color: AppTheme.bgSecondary,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Text('#$tokenNumber',
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: AppTheme.primaryLight)),
               ),
               Container(
-                width: 12, height: 12,
-                decoration: BoxDecoration(color: AppTheme.success, shape: BoxShape.circle, boxShadow: [BoxShadow(color: AppTheme.success.withOpacity(0.4), blurRadius: 8)]),
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                    color: AppTheme.success,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppTheme.success.withValues(alpha: 0.4),
+                          blurRadius: 8)
+                    ]),
               )
             ],
           ),
           const Spacer(),
-          Text(token['doctor_name'] ?? 'Doctor', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(token['doctor_name'] ?? 'Doctor',
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
-          Text('~${token['estimated_wait_minutes'] ?? 0} mins left', style: const TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
+          Text('~${token['estimated_wait_minutes'] ?? 0} mins left',
+              style: const TextStyle(
+                  color: AppTheme.textSecondary, fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -272,18 +342,24 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.border.withOpacity(0.4)),
+        border: Border.all(color: AppTheme.border.withValues(alpha: 0.4)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(color: AppTheme.secondary.withOpacity(0.1), borderRadius: BorderRadius.circular(14)),
+          decoration: BoxDecoration(
+              color: AppTheme.secondary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(14)),
           child: const Icon(Icons.event, color: AppTheme.secondary),
         ),
-        title: Text(apt['doctor_name'] ?? 'Doctor', style: const TextStyle(fontWeight: FontWeight.w700)),
-        subtitle: Text('${apt['appointment_date']} at ${apt['appointment_time']}', style: const TextStyle(color: AppTheme.textSecondary)),
-        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: AppTheme.textMuted),
+        title: Text(apt['doctor_name'] ?? 'Doctor',
+            style: const TextStyle(fontWeight: FontWeight.w700)),
+        subtitle: Text(
+            '${apt['appointment_date']} at ${apt['appointment_time']}',
+            style: const TextStyle(color: AppTheme.textSecondary)),
+        trailing: const Icon(Icons.arrow_forward_ios_rounded,
+            size: 16, color: AppTheme.textMuted),
       ),
     );
   }
@@ -293,15 +369,18 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppTheme.bgSecondary.withOpacity(0.5),
+        color: AppTheme.bgSecondary.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-           Icon(icon, size: 32, color: AppTheme.textMuted),
-           const SizedBox(height: 12),
-           Text(message, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
+          Icon(icon, size: 32, color: AppTheme.textMuted),
+          const SizedBox(height: 12),
+          Text(message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: AppTheme.textSecondary, fontWeight: FontWeight.w500)),
         ],
       ),
     );
