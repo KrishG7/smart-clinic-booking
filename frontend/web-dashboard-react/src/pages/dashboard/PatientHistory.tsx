@@ -3,6 +3,7 @@ import { CalendarRange, Activity, FileText } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
 export const PatientHistory: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -3,6 +3,7 @@ import { Activity, Users, ShieldCheck, UserPlus, FileText } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
 export const AdminDashboard: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 

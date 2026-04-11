@@ -24,6 +24,7 @@ export const authService = {
     });
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async register(data: any): Promise<AuthResponse> {
     return apiClient('/auth/register', {
       method: 'POST',
@@ -31,6 +32,7 @@ export const authService = {
     });
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async sendOtp(phone: string): Promise<any> {
     return apiClient('/auth/send-otp', {
       method: 'POST',

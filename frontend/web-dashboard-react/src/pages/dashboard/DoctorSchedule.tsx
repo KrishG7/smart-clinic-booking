@@ -3,6 +3,7 @@ import { CalendarRange, Search } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
 export const DoctorSchedule: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');
@@ -16,6 +17,7 @@ export const DoctorSchedule: React.FC = () => {
         const docRes = await apiClient('/doctors');
         let docId = 1;
         if (docRes.success && Array.isArray(docRes.doctors)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mine = docRes.doctors.find((d: any) => d.user_id === userId);
           if (mine) docId = mine.id;
         }

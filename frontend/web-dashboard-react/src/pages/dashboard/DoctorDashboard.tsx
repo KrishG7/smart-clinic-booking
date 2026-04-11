@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const DoctorDashboard: React.FC<Props> = ({ user }) => {
-  const [queue, setQueue] = useState<any[]>([]);
+  const [queue, setQueue] = useState<unknown[]>([]);
   const [currentToken, setCurrentToken] = useState<any>(null);
   const [doctorId, setDoctorId] = useState<number | null>(null);
 
@@ -22,29 +22,28 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
           const mine = res.doctors.find((d: any) => d.user_id === user.id);
           setDoctorId(mine?.id ?? 1); // fallback 1 for demo
         }
-      } catch (e) {
+      } catch (_e) {
         setDoctorId(1);
       }
     };
     loadDoctorId();
   }, [user.id]);
 
-  const fetchData = async () => {
-    if (!doctorId) return;
-    try {
-      // Queue API returns: { success, doctorId, currentToken, queueLength, queue }
-      const qRes = await apiClient(`/tokens/queue/${doctorId}`);
-      if (qRes.success) {
-        setQueue(qRes.queue || []);
-        setCurrentToken(qRes.currentToken ?? null);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   useEffect(() => {
     if (!doctorId) return;
+    
+    const fetchData = async () => {
+      try {
+        const qRes = await apiClient(`/tokens/queue/${doctorId}`);
+        if (qRes.success) {
+          setQueue(qRes.queue || []);
+          setCurrentToken(qRes.currentToken ?? null);
+        }
+      } catch (_e) {
+        console.error(_e);
+      }
+    };
+
     fetchData();
     const intv = setInterval(fetchData, 10000);
     return () => clearInterval(intv);
@@ -56,7 +55,15 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
         method: 'POST',
         body: JSON.stringify({ doctorId: doctorId || 1 })
       });
-      if (res.success) fetchData();
+      if (res.success) {
+        // We'll refetch via simple call if needed, or rely on polling
+        // Re-implementing manual fetch for callNextPatient:
+        const qRes = await apiClient(`/tokens/queue/${doctorId}`);
+        if (qRes.success) {
+          setQueue(qRes.queue || []);
+          setCurrentToken(qRes.currentToken ?? null);
+        }
+      }
       else alert(res.message || 'Failed to call next token');
     } catch {
       alert('Error calling next token');

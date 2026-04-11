@@ -3,6 +3,7 @@ import { Search, UserCheck, ShieldAlert, BadgeInfo } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
 export const AdminAllUsers: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('');

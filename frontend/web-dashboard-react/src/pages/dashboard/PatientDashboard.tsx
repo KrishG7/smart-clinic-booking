@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Bell, Clock } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
-export const PatientDashboard: React.FC<{setActiveTab: any}> = ({setActiveTab}) => {
+export const PatientDashboard: React.FC<{setActiveTab: (val: string) => void}> = ({setActiveTab}) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [myToken, setMyToken] = useState<any>(null);
 
-  const fetchData = async () => {
-    try {
-      const tRes = await apiClient('/tokens/my');
-      if (tRes.success) setMyToken(tRes.tokens?.[0] ?? null);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const tRes = await apiClient('/tokens/my');
+        if (tRes.success) setMyToken(tRes.tokens?.[0] ?? null);
+      } catch (_e) {
+        console.error(_e);
+      }
+    };
+
     fetchData();
     const intv = setInterval(fetchData, 10000);
     return () => clearInterval(intv);

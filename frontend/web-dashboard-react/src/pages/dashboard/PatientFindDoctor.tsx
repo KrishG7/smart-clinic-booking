@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Search, Star, Users } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
-export const PatientFindDoctor: React.FC<{setActiveTab: any}> = ({setActiveTab}) => {
+export const PatientFindDoctor: React.FC<{setActiveTab: (val: string) => void}> = ({setActiveTab}) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [doctors, setDoctors] = useState<any[]>([]);
   const [specializations, setSpecializations] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   
   const [search, setSearch] = useState('');
   const [selectedSpec, setSelectedSpec] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [bookingModal, setBookingModal] = useState<any>(null);
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import { Mail, Phone, BookOpen, Clock, Activity } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
 export const AdminPendingDoctors: React.FC = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [pending, setPending] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
