@@ -16,6 +16,7 @@ Version 1.0.0 | Team: Wait Zero | Course: Software Engineering
 7. [Frequently Asked Questions](#7-frequently-asked-questions)
 8. [Known Limitations](#8-known-limitations)
 9. [Contact & Support](#9-contact--support)
+10. [Appendix A — Installing Prerequisites From Scratch](#appendix-a--installing-prerequisites-from-scratch)
 
 ---
 
@@ -364,6 +365,181 @@ The left sidebar has these sections:
 
 **Repository:** https://github.com/KrishG7/smart-clinic-booking
 **Issues:** https://github.com/KrishG7/smart-clinic-booking/issues
+
+---
+
+## Appendix A — Installing Prerequisites From Scratch
+
+> **If you have nothing installed**, follow this section for your OS before going to [Section 3](#3-installation--first-time-setup).
+
+---
+
+### A1. Install Git
+
+**Windows:**
+1. Download from https://git-scm.com/download/win
+2. Run the installer → keep all defaults → click Install
+3. Open **Git Bash** (search in Start menu) and verify:
+   ```bash
+   git --version
+   ```
+
+**macOS:**
+```bash
+# Option 1: Xcode Command Line Tools (easiest)
+xcode-select --install
+
+# Option 2: Homebrew
+brew install git
+```
+Verify: `git --version`
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install git -y
+git --version
+```
+
+---
+
+### A2. Install Node.js (v18+) & npm
+
+**Windows:**
+1. Go to https://nodejs.org/
+2. Download the **LTS** version (v18 or v20)
+3. Run the installer → check "Add to PATH" → Install
+4. Open **Command Prompt** and verify:
+   ```bash
+   node --version
+   npm --version
+   ```
+
+**macOS:**
+```bash
+# Option 1: Direct download
+# Go to https://nodejs.org/ and download LTS .pkg installer
+
+# Option 2: Homebrew
+brew install node@20
+```
+Verify: `node --version && npm --version`
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Using NodeSource (recommended — gets latest LTS)
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install nodejs -y
+node --version
+npm --version
+```
+
+---
+
+### A3. Install MySQL (v8.0+)
+
+**Windows:**
+1. Download **MySQL Installer** from https://dev.mysql.com/downloads/installer/
+2. Choose "Developer Default" or "Server only"
+3. During setup:
+   - Set a **root password** (remember this — you'll need it in `.env`)
+   - Keep port as `3306`
+   - Select "Start MySQL Server at System Startup"
+4. After install, open **MySQL Command Line Client** from Start menu
+5. Verify by logging in:
+   ```bash
+   mysql -u root -p
+   ```
+
+**macOS:**
+```bash
+# Using Homebrew (easiest)
+brew install mysql
+brew services start mysql
+
+# Set root password
+mysql_secure_installation
+
+# Verify
+mysql -u root -p
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt update
+sudo apt install mysql-server -y
+sudo systemctl start mysql
+sudo systemctl enable mysql
+
+# Set root password
+sudo mysql_secure_installation
+
+# Verify
+sudo mysql -u root -p
+```
+
+> **Important:** Remember the root password you set — you'll enter it in the `.env` file later.
+
+---
+
+### A4. Install Flutter SDK (v3.0+) — Only Needed for Mobile App
+
+> **Skip this if you only want to test the web dashboard and backend.**
+
+**Windows:**
+1. Download Flutter SDK from https://docs.flutter.dev/get-started/install/windows
+2. Extract the zip to `C:\flutter`
+3. Add `C:\flutter\bin` to your System PATH:
+   - Search "Environment Variables" → System variables → Path → Edit → New → `C:\flutter\bin`
+4. Open a **new** Command Prompt and run:
+   ```bash
+   flutter doctor
+   ```
+5. Install **Android Studio** from https://developer.android.com/studio
+   - During setup, install the Android SDK
+   - Open Android Studio → Settings → SDK Manager → Install SDK 33+
+   - Open AVD Manager → Create a virtual device (Pixel 5 recommended)
+
+**macOS:**
+```bash
+# Using Homebrew
+brew install --cask flutter
+
+# Or manual download from https://docs.flutter.dev/get-started/install/macos
+
+# Verify
+flutter doctor
+```
+Also install **Xcode** from App Store (for iOS simulator) or **Android Studio** (for Android emulator).
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Using snap (easiest)
+sudo snap install flutter --classic
+flutter doctor
+
+# Install Android Studio
+sudo snap install android-studio --classic
+```
+Open Android Studio → SDK Manager → install SDK 33+ → create an emulator.
+
+After installing, run `flutter doctor` and fix any issues it reports.
+
+---
+
+### A5. Quick Verification Checklist
+
+Run these commands to confirm everything is installed:
+
+```bash
+git --version        # Should show 2.x+
+node --version       # Should show v18.x+ or v20.x+
+npm --version        # Should show 9.x+
+mysql --version      # Should show 8.x+
+flutter --version    # Should show 3.x+ (only if testing mobile)
+```
+
+If all ✅, go to [Section 3 — Installation & First-Time Setup](#3-installation--first-time-setup).
 
 ---
 
