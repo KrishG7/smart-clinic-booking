@@ -15,6 +15,7 @@ A comprehensive **Healthcare Management System** with **Live Token Generation** 
 - [Prerequisites](#prerequisites)
 - [Installation & Setup](#installation--setup)
 - [Running the Application](#running-the-application)
+- [Peer Testing Guide](#peer-testing-guide)
 - [API Documentation](#api-documentation)
 - [Test Credentials](#test-credentials)
 - [Team Members](#team-members)
@@ -163,7 +164,39 @@ npm run dev
 
 ---
 
-## API Documentation
+## Peer Testing Guide
+
+> **For the evaluating team** — everything you need to test this project.
+
+### 📄 Documents
+
+| Document | Location |
+|---|---|
+| **User Manual** | [`docs/User-Manual.md`](docs/User-Manual.md) |
+| **SRS** | [`Software Requirements Specification (SRS).pdf`](Software%20Requirements%20Specification%20(SRS).pdf) |
+| **API Docs** | [`docs/api-documentation.md`](docs/api-documentation.md) |
+
+### 🚀 Fastest Way to Test (5 Minutes)
+
+1. **Clone & setup database** (Steps 1–2 above)
+2. **Start backend:** `cd backend && npm install && npm start`
+3. **Open web dashboard:** `cd frontend/web-dashboard-react && npm install && npm run dev`
+4. **Go to** `http://localhost:5173` and log in with credentials below
+
+> For the mobile app, run `flutter run` inside `frontend/mobile/` — it connects to the same backend on localhost.
+> ⚠️ Android emulator users: change `localhost` → `10.0.2.2` in `frontend/mobile/lib/utils/constants.dart`
+
+### 🐛 Raising Bug Issues
+
+Please raise bugs as GitHub Issues at: https://github.com/KrishG7/smart-clinic-booking/issues
+
+Use this format in the issue title:
+- `[BUG-Critical]` — crashes, freezes, data loss
+- `[BUG-Usability]` — unexpected behavior, missing feedback, confusing UX
+
+---
+
+
 
 Full API documentation is available in [`docs/api-documentation.md`](docs/api-documentation.md).
 
