@@ -356,11 +356,11 @@ The left sidebar has these sections:
 | Name | Role | Contact |
 |---|---|---|
 | Krish Gupta | Lead Developer | github: @KrishG7 |
-| Mukul Chauhan | Mobile Developer | — |
-| Amandeep Singh | Web Frontend | — |
-| Himanshu Chhillar | Backend & Testing | — |
-| Daksh Dahiya | API & Middleware | — |
-| Yuvraj Dahiya | Database & Models | — |
+| Mukul Chauhan | Mobile Developer | @Mukul09800 |
+| Amandeep Singh | Web Frontend | @Amandeep-bajwa |
+| Himanshu Chhillar | Backend & Testing | @HimanshuChhillar |
+| Daksh Dahiya | API & Middleware | @7dxksh7 |
+| Yuvraj Dahiya | Database & Models | @yuvrajdahiya01-byte |
 
 **Repository:** https://github.com/KrishG7/smart-clinic-booking
 **Issues:** https://github.com/KrishG7/smart-clinic-booking/issues
