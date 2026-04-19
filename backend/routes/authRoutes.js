@@ -7,7 +7,8 @@ const express = require('express');
 const router = express.Router();
 const {
     register, login, sendOTP, verifyOTPAndLogin, getProfile,
-    getAllUsers, getPendingDoctors, approveDoctor, rejectDoctor, getAdminStats
+    getAllUsers, getPendingDoctors, approveDoctor, rejectDoctor, getAdminStats,
+    adminCreateUser
 } = require('../controllers/authController');
 const { authenticate } = require('../middleware/authMiddleware');
 const { validateRegistration, validateLogin, validateOTP } = require('../middleware/validator');
@@ -27,5 +28,7 @@ router.get('/admin/pending-doctors', authenticate, getPendingDoctors);
 router.get('/admin/stats', authenticate, getAdminStats);
 router.put('/admin/approve-doctor/:userId', authenticate, approveDoctor);
 router.delete('/admin/reject-doctor/:userId', authenticate, rejectDoctor);
+// Admin-only: create any role (doctor, staff, admin)
+router.post('/admin/create-user', authenticate, adminCreateUser);
 
 module.exports = router;

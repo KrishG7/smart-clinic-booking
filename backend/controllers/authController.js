@@ -15,7 +15,12 @@ const { successResponse, errorResponse } = require('../utils/helpers');
  */
 async function register(req, res) {
     try {
-        const { name, phone, email, role, password, specialization, qualification, clinicAddress, experienceYears, consultationFee } = req.body;
+        const { name, phone, email, password } = req.body;
+
+        // SECURITY FIX #1: Public registration is ALWAYS patient only.
+        // Elevated roles (doctor, admin, staff) can only be created by admins via
+        // POST /api/auth/admin/create-user — never through public self-registration.
+        const safeRole = ROLES.PATIENT;
 
         // Check if user already exists
         const existing = await query('SELECT id FROM users WHERE phone = ?', [phone]);
@@ -31,42 +36,76 @@ async function register(req, res) {
         // Hash password
         const passwordHash = await bcrypt.hash(password, 10);
 
-        // Doctors start as inactive (pending admin approval)
-        const isActive = role === ROLES.DOCTOR ? false : true;
-
-        // Create user
+        // Create user with enforced patient role
         const result = await query(
             'INSERT INTO users (name, phone, email, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, phone, email || null, passwordHash, role || ROLES.PATIENT, isActive]
+            [name, phone, email || null, passwordHash, safeRole, true]
         );
 
         const userId = result.insertId;
+        await query('INSERT INTO patients (user_id) VALUES (?)', [userId]);
 
-        // Create role-specific profile
+        const token = generateToken({ id: userId, phone, role: safeRole, name });
+        successResponse(res, {
+            message: 'Registration successful',
+            token,
+            user: { id: userId, name, phone, email, role: safeRole }
+        }, 201);
+    } catch (error) {
+        console.error('Registration error:', error);
+        errorResponse(res, 'Registration failed: ' + error.message);
+    }
+}
+
+/**
+ * Admin: Create user with any role (doctor, staff, admin)
+ * POST /api/auth/admin/create-user
+ */
+async function adminCreateUser(req, res) {
+    try {
+        if (req.user.role !== 'admin') {
+            return errorResponse(res, 'Admin access required', 403);
+        }
+
+        const { name, phone, email, role, password, specialization, qualification, clinicAddress, experienceYears, consultationFee } = req.body;
+
+        const allowedRoles = [ROLES.PATIENT, ROLES.DOCTOR, ROLES.STAFF, ROLES.ADMIN];
+        if (!allowedRoles.includes(role)) {
+            return errorResponse(res, 'Invalid role', 400);
+        }
+
+        if (!password) return errorResponse(res, 'Password is required', 400);
+
+        const existing = await query('SELECT id FROM users WHERE phone = ?', [phone]);
+        if (existing.length > 0) {
+            return errorResponse(res, 'User with this phone number already exists', 409);
+        }
+
+        const passwordHash = await bcrypt.hash(password, 10);
+        const isActive = role === ROLES.DOCTOR ? false : true;
+
+        const result = await query(
+            'INSERT INTO users (name, phone, email, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
+            [name, phone, email || null, passwordHash, role, isActive]
+        );
+        const userId = result.insertId;
+
         if (role === ROLES.DOCTOR) {
             await query(
                 'INSERT INTO doctors (user_id, specialization, qualification, clinic_address, experience_years, consultation_fee) VALUES (?, ?, ?, ?, ?, ?)',
                 [userId, specialization || 'General Medicine', qualification || '', clinicAddress || '', experienceYears || 0, consultationFee || 500]
             );
-
-            successResponse(res, {
-                message: 'Doctor registration submitted! Your account is pending admin approval.',
-                pendingApproval: true,
-                user: { id: userId, name, phone, email, role: ROLES.DOCTOR }
-            }, 201);
         } else {
             await query('INSERT INTO patients (user_id) VALUES (?)', [userId]);
-
-            const token = generateToken({ id: userId, phone, role: role || ROLES.PATIENT, name });
-            successResponse(res, {
-                message: 'Registration successful',
-                token,
-                user: { id: userId, name, phone, email, role: role || ROLES.PATIENT }
-            }, 201);
         }
+
+        successResponse(res, {
+            message: `User created with role: ${role}`,
+            user: { id: userId, name, phone, email, role }
+        }, 201);
     } catch (error) {
-        console.error('Registration error:', error);
-        errorResponse(res, 'Registration failed: ' + error.message);
+        console.error('Admin create user error:', error);
+        errorResponse(res, 'Failed to create user: ' + error.message);
     }
 }
 
@@ -316,5 +355,6 @@ async function getAdminStats(req, res) {
 
 module.exports = {
     register, login, sendOTP, verifyOTPAndLogin, getProfile,
-    getAllUsers, getPendingDoctors, approveDoctor, rejectDoctor, getAdminStats
+    getAllUsers, getPendingDoctors, approveDoctor, rejectDoctor, getAdminStats,
+    adminCreateUser
 };

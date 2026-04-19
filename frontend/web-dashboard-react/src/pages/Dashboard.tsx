@@ -40,6 +40,22 @@ export const Dashboard: React.FC = () => {
     authService.logout();
   };
 
+  const NavItem = ({ id, icon, label }: { id: string, icon: React.ReactNode, label: string }) => {
+    const isActive = activeTab === id;
+    return (
+      <button
+        onClick={() => setActiveTab(id)}
+        className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg font-medium transition-all ${
+          isActive
+            ? 'bg-brand-600/20 text-brand-400 shadow-glass-card border border-brand-500/20'
+            : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+        }`}
+      >
+        {icon} {label}
+      </button>
+    );
+  };
+
   const renderSidebarLinks = () => {
     if (user?.role === 'admin') {
       return (
@@ -62,7 +78,7 @@ export const Dashboard: React.FC = () => {
         </>
       );
     }
-    // Patient
+    // Patient sidebar — FIX #17 & #18: Each nav item maps to a distinct view
     return (
       <>
         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-4 block">My Health</span>
@@ -77,31 +93,17 @@ export const Dashboard: React.FC = () => {
     );
   };
 
-  const NavItem = ({ id, icon, label }: { id: string, icon: React.ReactNode, label: string }) => {
-    const isActive = activeTab === id;
-    return (
-      <button 
-        onClick={() => setActiveTab(id)}
-        className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg font-medium transition-all ${
-          isActive 
-            ? 'bg-brand-600/20 text-brand-400 shadow-glass-card border border-brand-500/20' 
-            : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-        }`}
-      >
-        {icon} {label}
-      </button>
-    );
-  };
-
   const getPageTitle = () => {
     const titles: Record<string, string> = {
-      home: user?.role === 'admin' ? 'Clinic OS Administrator' : 'Live Dashboard Overview',
+      home: user?.role === 'admin' ? 'Clinic OS Administrator' : user?.role === 'doctor' ? 'Dashboard Status' : 'Home Overview',
       queue: 'Queue Control Center',
-      schedule: 'Appointment Calendar',
+      // FIX #17: Appointments and Visit History now have distinct page titles
+      schedule: user?.role === 'patient' ? 'Upcoming Appointments' : 'Appointment Calendar',
+      history: 'Visit History',
       pending: 'Staff Access Operations',
       users: 'User Records',
-      token: 'My Active Token',
-      history: 'Historical Health Records',
+      // FIX #18: My Live Token has its own distinct title
+      token: 'My Live Token',
       book: 'Find Doctor & Book',
       profile: 'Account Settings'
     };
@@ -121,32 +123,39 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 flex p-4 gap-6">
-      
-      {/* Floating Sidebar Container */}
+
+      {/* Floating Sidebar — FIX #15: Logout button at top for immediate access */}
       <aside className="w-64 glass-panel py-6 px-4 flex flex-col shadow-xl border-slate-800 relative z-20">
         <div className="flex-1">
-          <h2 className="text-xl font-bold tracking-tight text-white px-2 mb-8">
-            WaitZero<span className="text-brand-500 text-3xl leading-none">.</span>
-          </h2>
+          {/* Logo + Logout row at top */}
+          <div className="flex items-center justify-between px-2 mb-8">
+            <h2 className="text-xl font-bold tracking-tight text-white">
+              WaitZero<span className="text-brand-500 text-3xl leading-none">.</span>
+            </h2>
+            {/* FIX #15: Logout button now at top-right of sidebar, always visible */}
+            <button
+              onClick={handleLogout}
+              title="Terminate Session"
+              className="flex items-center justify-center p-2 text-rose-400 bg-rose-500/5 hover:bg-rose-500/15 border border-rose-500/10 rounded-lg transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
           <nav className="flex flex-col gap-1.5">
             {renderSidebarLinks()}
           </nav>
         </div>
-        
-        <button onClick={handleLogout} className="flex items-center justify-center gap-3 px-3 py-3 text-rose-400 font-bold bg-rose-500/5 hover:bg-rose-500/10 border border-rose-500/10 rounded-xl transition-colors w-full mt-8">
-          <LogOut className="w-5 h-5" /> Terminate Session
-        </button>
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col gap-6 w-full relative z-10 overflow-y-auto">
-        
+
         {/* Dynamic Nav Header */}
         <header className="glass-panel py-5 px-8 flex justify-between items-center w-full sticky top-0 z-30 bg-slate-950/40 backdrop-blur-xl border-b border-white/5 shadow-sm">
            <div className="flex flex-col gap-1">
               <h1 className="text-2xl font-bold text-white tracking-tight">{getPageTitle()}</h1>
            </div>
-           
+
            <div className="flex gap-4 items-center">
              <div className="flex flex-col items-end">
                <span className="text-sm font-bold text-white tracking-wide">{user?.name}</span>
@@ -159,21 +168,43 @@ export const Dashboard: React.FC = () => {
            </div>
         </header>
 
-        {/* Tab Routing Switch Component */}
+        {/* Tab Routing */}
         <div className="pb-8">
+
+          {/* ADMIN ROUTES */}
           {user?.role === 'admin' && activeTab === 'home' && <AdminDashboard />}
           {user?.role === 'admin' && activeTab === 'pending' && <AdminPendingDoctors />}
           {user?.role === 'admin' && activeTab === 'users' && <AdminAllUsers />}
 
           {/* DOCTOR ROUTES */}
-          {user?.role === 'doctor' && activeTab === 'home' && <div className="text-brand-400 p-8 text-center text-lg italic glass-panel border-brand-500/20 shadow-glass">Home Overview metrics building in next patch. Navigate to Live Queue.</div>}
+          {user?.role === 'doctor' && activeTab === 'home' && (
+            <div className="text-brand-400 p-8 text-center text-lg italic glass-panel border-brand-500/20 shadow-glass">
+              Home Overview metrics building in next patch. Navigate to Live Queue.
+            </div>
+          )}
           {user?.role === 'doctor' && activeTab === 'queue' && <DoctorDashboard user={user} />}
           {user?.role === 'doctor' && activeTab === 'schedule' && <DoctorSchedule />}
 
-          {/* PATIENT ROUTES */}
-          {user?.role === 'patient' && (activeTab === 'home' || activeTab === 'token') && <PatientDashboard setActiveTab={setActiveTab} />}
-          {user?.role === 'patient' && activeTab === 'book' && <PatientFindDoctor setActiveTab={setActiveTab} />}
-          {user?.role === 'patient' && (activeTab === 'schedule' || activeTab === 'history') && <PatientHistory />}
+          {/* PATIENT ROUTES — FIX #17 & #18: Each tab is distinct */}
+          {/* Home Overview: summary dashboard with appointments summary + quick-access Book button */}
+          {user?.role === 'patient' && activeTab === 'home' && (
+            <PatientDashboard setActiveTab={setActiveTab} showTokenOnly={false} />
+          )}
+          {/* My Live Token: dedicated token status widget only */}
+          {user?.role === 'patient' && activeTab === 'token' && (
+            <PatientDashboard setActiveTab={setActiveTab} showTokenOnly={true} />
+          )}
+          {/* Appointments: only upcoming/scheduled visits */}
+          {user?.role === 'patient' && activeTab === 'schedule' && (
+            <PatientHistory filter="upcoming" />
+          )}
+          {/* Visit History: only past/completed/cancelled records */}
+          {user?.role === 'patient' && activeTab === 'history' && (
+            <PatientHistory filter="past" />
+          )}
+          {user?.role === 'patient' && activeTab === 'book' && (
+            <PatientFindDoctor setActiveTab={setActiveTab} />
+          )}
         </div>
       </main>
     </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, ArrowRight, Clock } from 'lucide-react';
+import { Users, ArrowRight, Clock, AlertCircle } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 import type { User } from '../../services/authService';
 
@@ -12,6 +12,7 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentToken, setCurrentToken] = useState<any>(null);
   const [doctorId, setDoctorId] = useState<number | null>(null);
+  const [doctorError, setDoctorError] = useState<string | null>(null);
 
   // Fetch the actual doctor record so we get the doctors.id (not users.id)
   useEffect(() => {
@@ -22,10 +23,17 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
         if (res.success && Array.isArray(res.doctors)) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mine = res.doctors.find((d: any) => d.user_id === user.id);
-          setDoctorId(mine?.id ?? 1); // fallback 1 for demo
+          if (mine?.id) {
+            setDoctorId(mine.id);
+          } else {
+            // FIX #12: Do NOT fall back to doctorId=1. Show error instead.
+            setDoctorError('Could not locate your doctor profile. Please contact an administrator.');
+          }
+        } else {
+          setDoctorError('Failed to load doctor data from server.');
         }
       } catch {
-        setDoctorId(1);
+        setDoctorError('Network error: unable to load doctor profile.');
       }
     };
     loadDoctorId();
@@ -52,14 +60,13 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
   }, [doctorId]);
 
   const callNextPatient = async () => {
+    if (!doctorId) return;
     try {
       const res = await apiClient('/tokens/next', {
         method: 'POST',
-        body: JSON.stringify({ doctorId: doctorId || 1 })
+        body: JSON.stringify({ doctorId })
       });
       if (res.success) {
-        // We'll refetch via simple call if needed, or rely on polling
-        // Re-implementing manual fetch for callNextPatient:
         const qRes = await apiClient(`/tokens/queue/${doctorId}`);
         if (qRes.success) {
           setQueue(qRes.queue || []);
@@ -71,6 +78,17 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
       alert('Error calling next token');
     }
   };
+
+  // FIX #12: Block queue actions if doctor profile could not be loaded
+  if (doctorError) {
+    return (
+      <div className="glass-panel p-8 flex flex-col items-center justify-center gap-4 text-center">
+        <AlertCircle className="w-12 h-12 text-rose-400" />
+        <h3 className="text-xl font-bold text-white">Doctor Profile Error</h3>
+        <p className="text-slate-400 max-w-md">{doctorError}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

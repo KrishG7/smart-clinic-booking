@@ -16,6 +16,14 @@ async function getPatient(req, res) {
         if (!patient) {
             return errorResponse(res, 'Patient not found', 404);
         }
+
+        // SECURITY FIX #3: Only the owning patient (matched by user_id) or
+        // privileged roles (admin, staff, doctor) may read a patient profile.
+        const isPrivileged = ['admin', 'staff', 'doctor'].includes(req.user.role);
+        if (!isPrivileged && patient.user_id !== req.user.id) {
+            return errorResponse(res, 'Access denied', 403);
+        }
+
         successResponse(res, { patient });
     } catch (error) {
         errorResponse(res, 'Failed to get patient: ' + error.message);
@@ -59,11 +67,20 @@ async function getAllPatients(req, res) {
  */
 async function updatePatient(req, res) {
     try {
-        const patient = await Patient.update(req.params.id, req.body);
+        // SECURITY FIX #3: Only the owning patient or an admin may update a patient profile.
+        const patient = await Patient.findById(req.params.id);
         if (!patient) {
+            return errorResponse(res, 'Patient not found', 404);
+        }
+        const isPrivileged = ['admin'].includes(req.user.role);
+        if (!isPrivileged && patient.user_id !== req.user.id) {
+            return errorResponse(res, 'Access denied', 403);
+        }
+        const updated = await Patient.update(req.params.id, req.body);
+        if (!updated) {
             return errorResponse(res, 'No fields to update or patient not found', 400);
         }
-        successResponse(res, { message: 'Profile updated', patient });
+        successResponse(res, { message: 'Profile updated', patient: updated });
     } catch (error) {
         errorResponse(res, 'Failed to update patient: ' + error.message);
     }

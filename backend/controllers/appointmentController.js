@@ -129,6 +129,19 @@ async function getAppointment(req, res) {
         if (!appointment) {
             return errorResponse(res, 'Appointment not found', 404);
         }
+
+        // SECURITY FIX #2: Enforce ownership — only the patient who booked,
+        // or a doctor/admin/staff, may view this appointment.
+        const isPrivileged = ['doctor', 'admin', 'staff'].includes(req.user.role);
+        if (!isPrivileged) {
+            // Find the patient record for this user
+            const patients = await dbQuery('SELECT id FROM patients WHERE user_id = ?', [req.user.id]);
+            const myPatientId = patients[0]?.id;
+            if (!myPatientId || appointment.patient_id !== myPatientId) {
+                return errorResponse(res, 'Access denied', 403);
+            }
+        }
+
         successResponse(res, { appointment });
     } catch (error) {
         errorResponse(res, 'Failed to get appointment: ' + error.message);
@@ -160,6 +173,15 @@ async function getMyAppointments(req, res) {
  */
 async function getDoctorAppointments(req, res) {
     try {
+        // SECURITY FIX #11: If logged in as a doctor, enforce ownership —
+        // they can only query their own doctorId unless they are admin/staff.
+        if (req.user.role === 'doctor') {
+            const doctors = await dbQuery('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+            const myDoctorId = doctors[0]?.id;
+            if (!myDoctorId || String(myDoctorId) !== String(req.params.doctorId)) {
+                return errorResponse(res, 'Access denied: you can only view your own appointments', 403);
+            }
+        }
         const appointments = await Appointment.findByDoctor(
             req.params.doctorId,
             req.query.date || new Date().toISOString().split('T')[0]
@@ -193,11 +215,23 @@ async function updateStatus(req, res) {
  */
 async function cancelAppointment(req, res) {
     try {
-        const appointment = await Appointment.cancel(req.params.id);
+        const appointment = await Appointment.findById(req.params.id);
         if (!appointment) {
             return errorResponse(res, 'Appointment not found', 404);
         }
-        successResponse(res, { message: 'Appointment cancelled', appointment });
+
+        // SECURITY FIX #2: Only the owning patient or privileged roles can cancel
+        const isPrivileged = ['doctor', 'admin', 'staff'].includes(req.user.role);
+        if (!isPrivileged) {
+            const patients = await dbQuery('SELECT id FROM patients WHERE user_id = ?', [req.user.id]);
+            const myPatientId = patients[0]?.id;
+            if (!myPatientId || appointment.patient_id !== myPatientId) {
+                return errorResponse(res, 'Access denied', 403);
+            }
+        }
+
+        const cancelled = await Appointment.cancel(appointment.id);
+        successResponse(res, { message: 'Appointment cancelled', appointment: cancelled });
     } catch (error) {
         errorResponse(res, 'Failed to cancel appointment: ' + error.message);
     }
@@ -209,6 +243,14 @@ async function cancelAppointment(req, res) {
  */
 async function getStats(req, res) {
     try {
+        // SECURITY FIX #11: doctors can only view their own stats
+        if (req.user.role === 'doctor') {
+            const doctors = await dbQuery('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+            const myDoctorId = doctors[0]?.id;
+            if (!myDoctorId || String(myDoctorId) !== String(req.params.doctorId)) {
+                return errorResponse(res, 'Access denied: you can only view your own stats', 403);
+            }
+        }
         const stats = await Appointment.getTodayStats(req.params.doctorId);
         successResponse(res, { stats });
     } catch (error) {

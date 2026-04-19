@@ -204,8 +204,10 @@ Full API documentation is available in [`docs/api-documentation.md`](docs/api-do
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/auth/register` | Register a new user |
-| POST | `/api/auth/login` | Login with OTP |
+| POST | `/api/auth/register` | Register a new patient account |
+| POST | `/api/auth/login` | Login with phone + **password** (primary flow) |
+| POST | `/api/auth/send-otp` | Send OTP (alternative login flow) |
+| POST | `/api/auth/verify-otp` | Login via OTP (alternative flow) |
 | GET | `/api/patients/:id` | Get patient profile |
 | POST | `/api/appointments` | Book an appointment |
 | GET | `/api/tokens/queue/:doctorId` | Get current queue |
@@ -216,13 +218,13 @@ Full API documentation is available in [`docs/api-documentation.md`](docs/api-do
 
 ## Test Credentials
 
-| Role | Phone | OTP |
+| Role | Phone | Password |
 |---|---|---|
-| Patient | 9876543210 | 123456 |
-| Doctor | 9876543211 | 123456 |
-| Admin/Staff | 9876543212 | 123456 |
+| Patient | 9876543210 | Password123 |
+| Doctor | 9876543211 | Password123 |
+| Admin/Staff | 9876543212 | Password123 |
 
-> **Note:** For demo purposes, OTP verification accepts `123456` as a valid code for all test accounts.
+> **Authentication:** The primary login path is `POST /api/auth/login` with `{ phone, password }`. An OTP-based alternative is also available via `POST /api/auth/send-otp` + `POST /api/auth/verify-otp`.
 
 ---
 

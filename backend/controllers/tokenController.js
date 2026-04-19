@@ -16,6 +16,10 @@ async function getQueue(req, res) {
         const queue = await Token.getQueue(req.params.doctorId);
         const currentToken = await Token.getCurrentToken(req.params.doctorId);
 
+        // SECURITY FIX #4: Patient phone numbers are sensitive PII.
+        // Only doctors, admin, and staff may see patientPhone in the queue.
+        const isPrivileged = ['doctor', 'admin', 'staff'].includes(req.user.role);
+
         successResponse(res, {
             doctorId: req.params.doctorId,
             currentToken: currentToken ? {
@@ -28,7 +32,8 @@ async function getQueue(req, res) {
                 id: t.id,
                 tokenNumber: t.token_number,
                 patientName: t.patient_name,
-                patientPhone: t.patient_phone,
+                // Phone only shown to privileged roles
+                ...(isPrivileged ? { patientPhone: t.patient_phone } : {}),
                 status: t.status,
                 type: t.type,
                 queuePosition: t.queue_position,
@@ -51,6 +56,15 @@ async function callNext(req, res) {
 
         if (!doctorId) {
             return errorResponse(res, 'Doctor ID is required', 400);
+        }
+
+        // SECURITY FIX #9: Doctors can only advance their own queue
+        if (req.user.role === 'doctor') {
+            const doctors = await dbQuery('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+            const myDoctorId = doctors[0]?.id;
+            if (!myDoctorId || String(myDoctorId) !== String(doctorId)) {
+                return errorResponse(res, 'Access denied: you can only manage your own queue', 403);
+            }
         }
 
         const nextToken = await Token.callNext(doctorId);
@@ -89,6 +103,15 @@ async function emergencyInterrupt(req, res) {
             return errorResponse(res, 'Doctor ID and Patient ID are required', 400);
         }
 
+        // SECURITY FIX #9: Doctors can only issue emergency tokens for their own queue
+        if (req.user.role === 'doctor') {
+            const doctors = await dbQuery('SELECT id FROM doctors WHERE user_id = ?', [req.user.id]);
+            const myDoctorId = doctors[0]?.id;
+            if (!myDoctorId || String(myDoctorId) !== String(doctorId)) {
+                return errorResponse(res, 'Access denied: you can only manage your own queue', 403);
+            }
+        }
+
         const emergencyToken = await Token.emergencyInterrupt(doctorId, patientId, appointmentId);
 
         successResponse(res, {
@@ -108,19 +131,56 @@ async function checkIn(req, res) {
     try {
         const { latitude, longitude } = req.body;
 
-        // Validate GPS location (geofencing)
+        // INPUT FIX #7: Strictly validate GPS coordinates as numeric values within valid ranges
+        if (latitude !== undefined || longitude !== undefined) {
+            const lat = parseFloat(latitude);
+            const lng = parseFloat(longitude);
+
+            if (isNaN(lat) || isNaN(lng)) {
+                return errorResponse(res, 'Latitude and longitude must be valid numbers', 400);
+            }
+            if (lat < -90 || lat > 90) {
+                return errorResponse(res, 'Latitude must be between -90 and 90', 400);
+            }
+            if (lng < -180 || lng > 180) {
+                return errorResponse(res, 'Longitude must be between -180 and 180', 400);
+            }
+        }
+
+        // SECURITY FIX #5: Verify the token belongs to the requesting patient
+        const tokenId = req.params.id;
+        const patients = await dbQuery('SELECT id FROM patients WHERE user_id = ?', [req.user.id]);
+        if (patients.length === 0) {
+            return errorResponse(res, 'Patient profile not found', 404);
+        }
+        const myPatientId = patients[0].id;
+
+        // Fetch token to verify ownership (also checks token exists)
+        const tokenRows = await dbQuery('SELECT * FROM tokens WHERE id = ?', [tokenId]);
+        if (tokenRows.length === 0) {
+            return errorResponse(res, 'Token not found', 404);
+        }
+        // Allow check-in only if the patient owns the token, or role is staff/doctor/admin
+        const isPrivileged = ['doctor', 'admin', 'staff'].includes(req.user.role);
+        if (!isPrivileged && tokenRows[0].patient_id !== myPatientId) {
+            return errorResponse(res, 'Access denied: you can only check in for your own token', 403);
+        }
+
+        // Validate GPS geofence if coordinates provided
         const clinicLat = parseFloat(process.env.CLINIC_LATITUDE) || 28.6139;
         const clinicLng = parseFloat(process.env.CLINIC_LONGITUDE) || 77.2090;
         const radius = parseInt(process.env.GEOFENCE_RADIUS_METERS) || 200;
 
-        if (latitude && longitude) {
-            const distance = calculateDistance(latitude, longitude, clinicLat, clinicLng);
+        if (latitude !== undefined && longitude !== undefined) {
+            const lat = parseFloat(latitude);
+            const lng = parseFloat(longitude);
+            const distance = calculateDistance(lat, lng, clinicLat, clinicLng);
             if (distance > radius) {
                 return errorResponse(res, `You are ${Math.round(distance)}m away. Please come within ${radius}m of the clinic to check in.`, 403);
             }
         }
 
-        const token = await Token.checkIn(req.params.id);
+        const token = await Token.checkIn(tokenId);
         if (!token) {
             return errorResponse(res, 'Token not found', 404);
         }

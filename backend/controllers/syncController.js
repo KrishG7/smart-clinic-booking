@@ -19,12 +19,28 @@ async function pushSync(req, res) {
         const { appointments = [], deviceId } = req.body;
         const results = { synced: [], conflicts: [], errors: [] };
 
+        // SECURITY FIX #10: Derive the patientId from JWT — never trust the client-supplied value.
+        const patientRows = await query('SELECT id FROM patients WHERE user_id = ?', [req.user.id]);
+        if (patientRows.length === 0) {
+            return errorResponse(res, 'Patient profile not found for this user', 404);
+        }
+        const serverPatientId = patientRows[0].id;
+
         for (const localAppointment of appointments) {
             try {
                 // Check if record already exists (by local_id)
                 const existing = await Appointment.findByLocalId(localAppointment.localId);
 
                 if (existing) {
+                    // Ownership guard: reject if this sync record doesn't belong to the caller
+                    if (existing.patient_id !== serverPatientId) {
+                        results.errors.push({
+                            localId: localAppointment.localId,
+                            error: 'Ownership mismatch: appointment does not belong to this user'
+                        });
+                        continue;
+                    }
+
                     // Conflict resolution: Last Write Wins
                     if (new Date(localAppointment.updatedAt) > new Date(existing.updated_at)) {
                         // Local record is newer — update server
@@ -45,9 +61,9 @@ async function pushSync(req, res) {
                         });
                     }
                 } else {
-                    // New record — insert into server
+                    // New record — insert with server-verified patientId (ignore client value)
                     const newAppointment = await Appointment.create({
-                        patientId: localAppointment.patientId,
+                        patientId: serverPatientId,
                         doctorId: localAppointment.doctorId,
                         appointmentDate: localAppointment.appointmentDate,
                         appointmentTime: localAppointment.appointmentTime,
@@ -152,18 +168,42 @@ async function pullSync(req, res) {
  */
 async function getSyncStatus(req, res) {
     try {
-        const logs = await query(
-            `SELECT * FROM sync_log
-       ORDER BY created_at DESC
-       LIMIT 50`
-        );
+        // SECURITY FIX #6: Scope sync logs to the requesting user's own device/appointments.
+        // Admins may see all logs; regular users see only their own records.
+        let logs;
+        let pendingCount;
 
-        const pendingCount = await query(
-            `SELECT COUNT(*) as count FROM appointments WHERE sync_status = 'pending'`
-        );
+        if (req.user.role === 'admin') {
+            logs = await query(
+                `SELECT * FROM sync_log ORDER BY created_at DESC LIMIT 50`
+            );
+            const pendingRows = await query(
+                `SELECT COUNT(*) as count FROM appointments WHERE sync_status = 'pending'`
+            );
+            pendingCount = pendingRows[0].count;
+        } else {
+            // For patients, scope to their own appointments
+            const patientRows = await query('SELECT id FROM patients WHERE user_id = ?', [req.user.id]);
+            const patientId = patientRows[0]?.id;
+
+            logs = await query(
+                `SELECT sl.* FROM sync_log sl
+                 INNER JOIN appointments a ON sl.record_id = a.id AND sl.table_name = 'appointments'
+                 WHERE a.patient_id = ?
+                 ORDER BY sl.created_at DESC
+                 LIMIT 50`,
+                [patientId]
+            );
+            const pendingRows = await query(
+                `SELECT COUNT(*) as count FROM appointments
+                 WHERE sync_status = 'pending' AND patient_id = ?`,
+                [patientId]
+            );
+            pendingCount = pendingRows[0]?.count ?? 0;
+        }
 
         successResponse(res, {
-            pendingRecords: pendingCount[0].count,
+            pendingRecords: pendingCount,
             recentLogs: logs
         });
     } catch (error) {
