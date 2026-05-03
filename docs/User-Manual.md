@@ -308,13 +308,15 @@ The left sidebar has these sections:
 
 ## 6. Test Credentials (Demo Mode)
 
-> Use these to test the system without real OTPs.
+> Use these to test the system. The primary login is phone + password.
+> In development the OTP `123456` is also accepted as a shortcut for any
+> registered phone — do not rely on that in production.
 
-| Role | Phone Number | OTP |
+| Role | Phone Number | Password |
 |---|---|---|
-| **Patient** | 9876543210 | 123456 |
-| **Doctor** | 9876543211 | 123456 |
-| **Admin/Staff** | 9876543212 | 123456 |
+| **Patient** | 9876543210 | test123 |
+| **Doctor** | 9876543211 | test123 |
+| **Admin** | 9876543212 | test123 |
 
 ---
 

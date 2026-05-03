@@ -33,7 +33,7 @@ A comprehensive **Healthcare Management System** with **Live Token Generation** 
 - 🔄 **Offline-First Architecture** — Book appointments without internet; data syncs automatically
 - 🏥 **Live Token Queue** — Real-time queue management with emergency interrupt support
 - 📍 **GPS Check-In** — Geofencing-based patient check-in at the clinic
-- 💊 **Digital Prescriptions** — Instant prescription delivery to patient's mobile app
+- 💊 **Digital Prescriptions** — Doctors issue prescriptions digitally; patients view them on web and mobile
 
 ---
 
@@ -60,7 +60,7 @@ A comprehensive **Healthcare Management System** with **Live Token Generation** 
 | Cloud Database | MySQL |
 | Local Database | SQLite |
 | Authentication | JWT + OTP |
-| Encryption | AES-256 |
+| Password Hashing | bcrypt |
 | Communication | REST API (HTTPS/JSON) |
 
 ---
@@ -196,7 +196,7 @@ Use this format in the issue title:
 
 ---
 
-
+## API Documentation
 
 Full API documentation is available in [`docs/api-documentation.md`](docs/api-documentation.md).
 
@@ -204,7 +204,7 @@ Full API documentation is available in [`docs/api-documentation.md`](docs/api-do
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/auth/register` | Register a new patient account |
+| POST | `/api/auth/register` | Register a new patient account, or apply for a doctor account (pending admin approval) |
 | POST | `/api/auth/login` | Login with phone + **password** (primary flow) |
 | POST | `/api/auth/send-otp` | Send OTP (alternative login flow) |
 | POST | `/api/auth/verify-otp` | Login via OTP (alternative flow) |
@@ -212,6 +212,8 @@ Full API documentation is available in [`docs/api-documentation.md`](docs/api-do
 | POST | `/api/appointments` | Book an appointment |
 | GET | `/api/tokens/queue/:doctorId` | Get current queue |
 | POST | `/api/tokens/next` | Call next patient |
+| GET | `/api/prescriptions/my` | Patient's prescriptions |
+| POST | `/api/prescriptions` | Doctor issues a prescription |
 | POST | `/api/sync/push` | Sync local data to server |
 
 ---
@@ -220,11 +222,35 @@ Full API documentation is available in [`docs/api-documentation.md`](docs/api-do
 
 | Role | Phone | Password |
 |---|---|---|
-| Patient | 9876543210 | Password123 |
-| Doctor | 9876543211 | Password123 |
-| Admin/Staff | 9876543212 | Password123 |
+| Patient | 9876543210 | test123 |
+| Doctor | 9876543211 | test123 |
+| Admin | 9876543212 | test123 |
 
 > **Authentication:** The primary login path is `POST /api/auth/login` with `{ phone, password }`. An OTP-based alternative is also available via `POST /api/auth/send-otp` + `POST /api/auth/verify-otp`.
+
+---
+
+## Testing
+
+The project includes a comprehensive suite of unit and integration tests across all platforms.
+
+### Backend Tests
+```bash
+cd backend
+npm test
+```
+
+### Web Dashboard Tests
+```bash
+cd frontend/web-dashboard-react
+npm test
+```
+
+### Mobile App Tests
+```bash
+cd frontend/mobile
+flutter test
+```
 
 ---
 
