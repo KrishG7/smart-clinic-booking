@@ -40,7 +40,10 @@ class _HomeScreenState extends State<HomeScreen> {
       if (mounted) {
         setState(() {
           _todayTokens = tokensResult['tokens'] ?? [];
-          _upcomingAppointments = aptsResult['appointments'] ?? [];
+          // Only show truly upcoming appointments (booked or in_progress)
+          _upcomingAppointments = (aptsResult['appointments'] as List? ?? [])
+              .where((a) => a['status'] == 'booked' || a['status'] == 'in_progress')
+              .toList();
         });
       }
     } catch (e) {
@@ -210,11 +213,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ]),
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
-          onTap: (index) {
-            setState(() => _selectedIndex = index);
-            if (index == 1) Navigator.pushNamed(context, '/booking');
-            if (index == 2) Navigator.pushNamed(context, '/token-status');
-            if (index == 3) Navigator.pushNamed(context, '/profile');
+          onTap: (index) async {
+            if (index == _selectedIndex) return;
+            
+            if (index == 0) {
+              setState(() => _selectedIndex = 0);
+            } else if (index == 1) {
+              await Navigator.pushNamed(context, '/booking');
+              setState(() => _selectedIndex = 0); // Reset to Home after return
+            } else if (index == 2) {
+              await Navigator.pushNamed(context, '/token-status');
+              setState(() => _selectedIndex = 0);
+            } else if (index == 3) {
+              await Navigator.pushNamed(context, '/profile');
+              setState(() => _selectedIndex = 0);
+            }
           },
           selectedItemColor: AppTheme.primary,
           unselectedItemColor: AppTheme.textMuted,

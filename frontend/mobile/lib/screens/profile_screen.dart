@@ -37,7 +37,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      // Offline — use cached user data
+      if (mounted) {
+        setState(() {
+          _error = 'Could not load profile details. Please check your connection.';
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -46,6 +50,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     }
   }
+
+  String? _error;
 
   Future<void> _logout() async {
     await AuthService().logout();
@@ -60,7 +66,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(title: const Text('My Profile')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: AppTheme.danger),
+                      const SizedBox(height: 16),
+                      Text(_error!, textAlign: TextAlign.center, style: const TextStyle(color: AppTheme.textSecondary)),
+                      const SizedBox(height: 24),
+                      ElevatedButton(onPressed: _loadProfile, child: const Text('Retry')),
+                    ],
+                  ),
+                )
+              : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
