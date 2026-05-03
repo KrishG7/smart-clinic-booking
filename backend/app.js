@@ -18,6 +18,7 @@ const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const tokenRoutes = require('./routes/tokenRoutes');
 const syncRoutes = require('./routes/syncRoutes');
+const prescriptionRoutes = require('./routes/prescriptionRoutes');
 
 const app = express();
 
@@ -28,17 +29,7 @@ const ALLOWED_ORIGINS = (
   'http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500,http://localhost:8080,http://localhost:5173'
 ).split(',');
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
-      callback(new Error(`CORS: Origin '${origin}' is not allowed`));
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
@@ -60,6 +51,7 @@ app.use('/api/doctors', doctorRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/tokens', tokenRoutes);
 app.use('/api/sync', syncRoutes);
+app.use('/api/prescriptions', prescriptionRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
@@ -83,6 +75,7 @@ app.get('/', (req, res) => {
       appointments: '/api/appointments',
       tokens: '/api/tokens',
       sync: '/api/sync',
+      prescriptions: '/api/prescriptions',
     },
   });
 });
