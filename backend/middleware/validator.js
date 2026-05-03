@@ -41,6 +41,9 @@ const validateRegistration = [
     body('password')
         .notEmpty().withMessage('Password is required')
         .isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('role')
+        .optional()
+        .isIn(['patient', 'doctor']).withMessage('Invalid role'),
     // Note: 'role' field is intentionally NOT validated here.
     // Public registration always creates a 'patient' account regardless of what is sent.
     handleValidation

@@ -4,6 +4,7 @@
  */
 
 const Patient = require('../models/Patient');
+const { query } = require('../config/database');
 const { successResponse, errorResponse } = require('../utils/helpers');
 
 /**
@@ -119,4 +120,57 @@ async function deletePatient(req, res) {
     }
 }
 
-module.exports = { getPatient, getMyProfile, getAllPatients, updatePatient, searchPatients, deletePatient };
+/**
+ * Get patient history (appointments and prescriptions)
+ * GET /api/patients/:id/history
+ */
+async function getPatientHistory(req, res) {
+    try {
+        const patientId = req.params.id;
+        const patient = await Patient.findById(patientId);
+        if (!patient) {
+            return errorResponse(res, 'Patient not found', 404);
+        }
+
+        // SECURITY FIX #3: Check authorization
+        const isPrivileged = ['admin', 'staff', 'doctor'].includes(req.user.role);
+        if (!isPrivileged && patient.user_id !== req.user.id) {
+            return errorResponse(res, 'Access denied', 403);
+        }
+
+        const appointments = await query(
+            `SELECT a.*, u.name AS doctor_name, d.specialization 
+             FROM appointments a
+             JOIN doctors d ON a.doctor_id = d.id
+             JOIN users u ON d.user_id = u.id
+             WHERE a.patient_id = ?
+             ORDER BY a.appointment_date DESC, a.appointment_time DESC`,
+            [patientId]
+        );
+
+        const prescriptions = await query(
+            `SELECT p.*, u.name AS doctor_name, d.specialization
+             FROM prescriptions p
+             JOIN doctors d ON p.doctor_id = d.id
+             JOIN users u ON d.user_id = u.id
+             WHERE p.patient_id = ?
+             ORDER BY p.created_at DESC`,
+            [patientId]
+        );
+
+        successResponse(res, { 
+            patient,
+            history: {
+                appointments,
+                prescriptions: prescriptions.map(rx => ({
+                    ...rx,
+                    medications: typeof rx.medications === 'string' ? JSON.parse(rx.medications) : (rx.medications || [])
+                }))
+            }
+        });
+    } catch (error) {
+        errorResponse(res, 'Failed to get patient history: ' + error.message);
+    }
+}
+
+module.exports = { getPatient, getMyProfile, getAllPatients, updatePatient, searchPatients, deletePatient, getPatientHistory };

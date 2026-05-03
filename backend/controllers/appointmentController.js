@@ -38,6 +38,17 @@ async function bookAppointment(req, res) {
             return errorResponse(res, 'Appointment date must be today or in the future', 400);
         }
 
+        // Prevent double-booking for the exact same slot
+        const existingSlot = await dbQuery(
+            `SELECT id FROM appointments 
+             WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? AND status != 'cancelled'`,
+            [doctorId, appointmentDate, appointmentTime]
+        );
+        
+        if (existingSlot.length > 0) {
+            return errorResponse(res, 'This time slot is already booked. Please select another time.', 409);
+        }
+
         // Check for duplicate local_id (prevent re-sync of same appointment)
         if (localId) {
             const existing = await Appointment.findByLocalId(localId);

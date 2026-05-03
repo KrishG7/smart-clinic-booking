@@ -145,9 +145,20 @@ class Doctor {
 
         for (let m = startMinutes; m < endMinutes; m += duration) {
             const timeStr = minutesToTime(m);
+            let available = !bookedTimes.includes(timeStr);
+
+            // If the requested date is today, ensure the slot is in the future
+            if (available && date === new Date().toISOString().split('T')[0]) {
+                const now = new Date();
+                const nowMinutes = now.getHours() * 60 + now.getMinutes();
+                if (m <= nowMinutes + 15) { // 15 min buffer
+                    available = false;
+                }
+            }
+
             slots.push({
                 time: timeStr,
-                available: !bookedTimes.includes(timeStr)
+                available: available
             });
         }
 

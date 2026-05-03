@@ -15,12 +15,13 @@ const { successResponse, errorResponse } = require('../utils/helpers');
  */
 async function register(req, res) {
     try {
-        const { name, phone, email, password } = req.body;
+        const { name, phone, email, password, role, specialization } = req.body;
 
         // SECURITY FIX #1: Public registration is ALWAYS patient only.
         // Elevated roles (doctor, admin, staff) can only be created by admins via
         // POST /api/auth/admin/create-user — never through public self-registration.
-        const safeRole = ROLES.PATIENT;
+        const safeRole = role === ROLES.DOCTOR ? ROLES.DOCTOR : ROLES.PATIENT;
+        const isActive = safeRole !== ROLES.DOCTOR;
 
         // Check if user already exists
         const existing = await query('SELECT id FROM users WHERE phone = ?', [phone]);
@@ -39,10 +40,23 @@ async function register(req, res) {
         // Create user with enforced patient role
         const result = await query(
             'INSERT INTO users (name, phone, email, password_hash, role, is_active) VALUES (?, ?, ?, ?, ?, ?)',
-            [name, phone, email || null, passwordHash, safeRole, true]
+            [name, phone, email || null, passwordHash, safeRole, isActive]
         );
 
         const userId = result.insertId;
+        
+        if (safeRole === ROLES.DOCTOR) {
+            await query(
+                'INSERT INTO doctors (user_id, specialization, qualification, clinic_address, experience_years, consultation_fee) VALUES (?, ?, ?, ?, ?, ?)',
+                [userId, req.body.specialization || 'General Medicine', '', '', 0, 500]
+            );
+            return successResponse(res, {
+                message: 'Registration successful',
+                pendingApproval: true,
+                user: { id: userId, name, phone, email, role: safeRole }
+            }, 201);
+        }
+
         await query('INSERT INTO patients (user_id) VALUES (?)', [userId]);
 
         const token = generateToken({ id: userId, phone, role: safeRole, name });

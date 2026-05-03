@@ -5,7 +5,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { getPatient, getMyProfile, getAllPatients, updatePatient, searchPatients, deletePatient } = require('../controllers/patientController');
+const { getPatient, getMyProfile, getAllPatients, updatePatient, searchPatients, deletePatient, getPatientHistory } = require('../controllers/patientController');
 const { authenticate, authorize } = require('../middleware/authMiddleware');
 
 // All routes require authentication
@@ -15,6 +15,7 @@ router.use(authenticate);
 router.get('/me', getMyProfile);
 router.get('/search', authorize('admin', 'staff', 'doctor'), searchPatients);
 router.get('/:id', getPatient);
+router.get('/:id/history', authorize('doctor', 'admin', 'staff'), getPatientHistory);
 router.put('/:id', updatePatient);
 router.delete('/:id', authorize('admin'), deletePatient);
 
