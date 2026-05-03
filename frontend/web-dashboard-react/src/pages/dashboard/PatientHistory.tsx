@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { CalendarRange, Activity, FileText } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
+const drName = (name: string) => `Dr. ${name.replace(/^dr\.?\s*/i, '').trim()}`;
+
 interface Props {
   // FIX #17: 'upcoming' = Appointments tab (scheduled/in_progress)
   //          'past' = Visit History tab (completed/no_show/cancelled)
@@ -27,7 +29,7 @@ export const PatientHistory: React.FC<Props> = ({ filter }) => {
     fetchHistory();
   }, []);
 
-  const upcoming = appointments.filter(a => a.status === 'scheduled' || a.status === 'in_progress');
+  const upcoming = appointments.filter(a => a.status === 'booked' || a.status === 'in_progress');
   const past = appointments.filter(a => a.status === 'completed' || a.status === 'no_show' || a.status === 'cancelled');
 
   if (loading) return <div className="p-8 text-brand-500 animate-pulse">Loading health records...</div>;
@@ -61,7 +63,7 @@ export const PatientHistory: React.FC<Props> = ({ filter }) => {
                        </span>
                        {/* FIX #16: Only prefix 'Dr.' if doctor_name doesn't already start with 'Dr.' */}
                        <h4 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">
-                         {a.doctor_name?.startsWith('Dr.') ? a.doctor_name : `Dr. ${a.doctor_name || 'Unknown'}`}
+                         {drName(a.doctor_name || 'Unknown')}
                        </h4>
                      </div>
                      <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-brand-500/10 text-brand-400 rounded border border-brand-500/20 shadow-glass">
@@ -105,7 +107,7 @@ export const PatientHistory: React.FC<Props> = ({ filter }) => {
                    <div className="flex justify-between items-center mb-1">
                      {/* FIX #16: Prevent double 'Dr.' prefix */}
                      <span className="text-sm font-bold text-white">
-                       {a.doctor_name?.startsWith('Dr.') ? a.doctor_name : `Dr. ${a.doctor_name || 'Unknown'}`}
+                       {drName(a.doctor_name || 'Unknown')}
                      </span>
                      <span className={`text-[10px] font-bold uppercase tracking-widest ${
                        a.status === 'completed' ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'
@@ -160,7 +162,7 @@ export const PatientHistory: React.FC<Props> = ({ filter }) => {
                        </span>
                        {/* FIX #16: Prevent double 'Dr.' prefix */}
                        <h4 className="text-lg font-bold text-white group-hover:text-brand-400 transition-colors">
-                         {a.doctor_name?.startsWith('Dr.') ? a.doctor_name : `Dr. ${a.doctor_name || 'Unknown'}`}
+                         {drName(a.doctor_name || 'Unknown')}
                        </h4>
                      </div>
                      <span className="px-2 py-1 text-[10px] font-bold uppercase tracking-widest bg-brand-500/10 text-brand-400 rounded border border-brand-500/20 shadow-glass">
@@ -195,7 +197,7 @@ export const PatientHistory: React.FC<Props> = ({ filter }) => {
                    <div className="flex justify-between items-center mb-1">
                      {/* FIX #16: Prevent double 'Dr.' prefix */}
                      <span className="text-sm font-bold text-white">
-                       {a.doctor_name?.startsWith('Dr.') ? a.doctor_name : `Dr. ${a.doctor_name || 'Unknown'}`}
+                       {drName(a.doctor_name || 'Unknown')}
                      </span>
                      <span className={`text-[10px] font-bold uppercase tracking-widest ${
                        a.status === 'completed' ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'

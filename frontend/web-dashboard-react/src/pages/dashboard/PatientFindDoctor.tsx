@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Search, Star, Users } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
+const drName = (name: string) => `Dr. ${name.replace(/^dr\.?\s*/i, '').trim()}`;
+
 export const PatientFindDoctor: React.FC<{setActiveTab: (val: string) => void}> = ({setActiveTab}) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [doctors, setDoctors] = useState<any[]>([]);
@@ -99,7 +101,7 @@ export const PatientFindDoctor: React.FC<{setActiveTab: (val: string) => void}> 
                    {['👨‍⚕️','👩‍⚕️','🧑‍⚕️','👨‍🔬','👩‍🔬'][idx % 5]}
                  </div>
                  <div>
-                   <h3 className="text-xl font-bold text-white">Dr. {doc.name}</h3>
+                   <h3 className="text-xl font-bold text-white">{drName(doc.name)}</h3>
                    <span className="text-sm font-semibold text-brand-400 uppercase tracking-widest bg-brand-500/10 px-2 py-0.5 rounded">{doc.specialization || 'General'}</span>
                  </div>
                </div>
@@ -144,7 +146,7 @@ export const PatientFindDoctor: React.FC<{setActiveTab: (val: string) => void}> 
              <button onClick={() => setBookingModal(null)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white bg-slate-800/50 hover:bg-rose-500/20 rounded-full transition-colors">&times;</button>
              
              <h2 className="text-2xl font-bold text-white mb-1">Book Clinic Visit</h2>
-             <p className="text-slate-400 mb-6">with Dr. {bookingModal.name} &bull; <span className="text-brand-400">{bookingModal.specialization}</span></p>
+             <p className="text-slate-400 mb-6">with {drName(bookingModal.name)} &bull; <span className="text-brand-400">{bookingModal.specialization}</span></p>
 
              <form onSubmit={handleBook} className="flex flex-col gap-4">
                <div>

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Mail, Phone, BookOpen, Clock, Activity } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
+const drName = (name: string) => `Dr. ${name.replace(/^dr\.?\s*/i, '').trim()}`;
+
 export const AdminPendingDoctors: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [pending, setPending] = useState<any[]>([]);
@@ -63,7 +65,7 @@ export const AdminPendingDoctors: React.FC = () => {
             <div key={doc.id} className="glass-panel p-6 border-t-4 border-amber-500 hover:shadow-glass-card transition-all">
                <div className="flex justify-between items-start mb-4 border-b border-slate-800 pb-4">
                  <div>
-                   <h4 className="text-lg font-bold text-white mb-1">Dr. {doc.name}</h4>
+                   <h4 className="text-lg font-bold text-white mb-1">{drName(doc.name)}</h4>
                    <span className="text-sm text-brand-400 font-semibold tracking-wide uppercase px-2 py-0.5 bg-brand-500/10 rounded">{doc.specialization || 'General'}</span>
                  </div>
                </div>

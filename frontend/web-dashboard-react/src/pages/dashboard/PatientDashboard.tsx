@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Bell, Clock, CalendarRange } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 
+const drName = (name: string) => `Dr. ${name.replace(/^dr\.?\s*/i, '').trim()}`;
+
 interface Props {
   setActiveTab: (val: string) => void;
   // FIX #18: showTokenOnly=true renders only the live token widget (My Live Token tab)
@@ -28,7 +30,7 @@ export const PatientDashboard: React.FC<Props> = ({ setActiveTab, showTokenOnly 
             setUpcomingAppointments(
               (aRes.appointments || []).filter(
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (a: any) => a.status === 'scheduled' || a.status === 'in_progress'
+                (a: any) => a.status === 'booked' || a.status === 'in_progress'
               ).slice(0, 3)
             );
           }
@@ -110,7 +112,7 @@ export const PatientDashboard: React.FC<Props> = ({ setActiveTab, showTokenOnly 
           ) : (
             upcomingAppointments.map((a) => (
               <div key={a.id} className="bg-slate-900/50 border border-slate-700/50 p-3 rounded-xl">
-                <p className="text-white font-semibold text-sm">Dr. {a.doctor_name || 'Unknown'}</p>
+                <p className="text-white font-semibold text-sm">{drName(a.doctor_name || 'Unknown')}</p>
                 <p className="text-slate-400 text-xs mt-0.5">{a.appointment_date} at {a.appointment_time}</p>
               </div>
             ))

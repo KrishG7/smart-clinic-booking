@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LogOut, Activity, LayoutDashboard, CalendarRange, Clock, Search, History, Settings, CheckSquare, Users } from 'lucide-react';
+import { LogOut, Activity, LayoutDashboard, CalendarRange, Clock, Search, History, Settings, CheckSquare, Users, Pill } from 'lucide-react';
 import { authService } from '../services/authService';
 import type { User } from '../services/authService';
 
@@ -12,12 +12,18 @@ import { AdminAllUsers } from './dashboard/AdminAllUsers';
 import { DoctorSchedule } from './dashboard/DoctorSchedule';
 import { PatientFindDoctor } from './dashboard/PatientFindDoctor';
 import { PatientHistory } from './dashboard/PatientHistory';
+import { PatientPrescriptions } from './dashboard/PatientPrescriptions';
 
 export const Dashboard: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('home');
+  const [activeTab, setActiveTab] = useState(() => {
+    return sessionStorage.getItem('waitzero_active_tab') || 'home';
+  });
 
+  useEffect(() => {
+    sessionStorage.setItem('waitzero_active_tab', activeTab);
+  }, [activeTab]);
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -86,6 +92,7 @@ export const Dashboard: React.FC = () => {
         <NavItem id="token" icon={<Clock className="w-5 h-5"/>} label="My Live Token" />
         <NavItem id="schedule" icon={<CalendarRange className="w-5 h-5"/>} label="Appointments" />
         <NavItem id="history" icon={<History className="w-5 h-5"/>} label="Visit History" />
+        <NavItem id="prescriptions" icon={<Pill className="w-5 h-5"/>} label="Prescriptions" />
         <span className="text-xs font-bold text-slate-500 uppercase tracking-widest px-3 mb-2 mt-6 block">Services</span>
         <NavItem id="book" icon={<Search className="w-5 h-5"/>} label="Book Clinic" />
         <NavItem id="profile" icon={<Settings className="w-5 h-5"/>} label="Profile Setup" />
@@ -105,6 +112,7 @@ export const Dashboard: React.FC = () => {
       // FIX #18: My Live Token has its own distinct title
       token: 'My Live Token',
       book: 'Find Doctor & Book',
+      prescriptions: 'My Prescriptions',
       profile: 'Account Settings'
     };
     return titles[activeTab] || 'Dashboard';
@@ -177,11 +185,7 @@ export const Dashboard: React.FC = () => {
           {user?.role === 'admin' && activeTab === 'users' && <AdminAllUsers />}
 
           {/* DOCTOR ROUTES */}
-          {user?.role === 'doctor' && activeTab === 'home' && (
-            <div className="text-brand-400 p-8 text-center text-lg italic glass-panel border-brand-500/20 shadow-glass">
-              Home Overview metrics building in next patch. Navigate to Live Queue.
-            </div>
-          )}
+          {user?.role === 'doctor' && activeTab === 'home' && <DoctorDashboard user={user} />}
           {user?.role === 'doctor' && activeTab === 'queue' && <DoctorDashboard user={user} />}
           {user?.role === 'doctor' && activeTab === 'schedule' && <DoctorSchedule />}
 
@@ -204,6 +208,10 @@ export const Dashboard: React.FC = () => {
           )}
           {user?.role === 'patient' && activeTab === 'book' && (
             <PatientFindDoctor setActiveTab={setActiveTab} />
+          )}
+          {/* UC-06: Patient sees prescriptions issued by their doctors */}
+          {user?.role === 'patient' && activeTab === 'prescriptions' && (
+            <PatientPrescriptions />
           )}
         </div>
       </main>

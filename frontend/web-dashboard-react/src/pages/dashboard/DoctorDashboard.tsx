@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, ArrowRight, Clock, AlertCircle } from 'lucide-react';
+import { Users, ArrowRight, Clock, AlertCircle, Activity } from 'lucide-react';
 import { apiClient } from '../../services/apiClient';
 import type { User } from '../../services/authService';
 
@@ -13,6 +13,8 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
   const [currentToken, setCurrentToken] = useState<any>(null);
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const [doctorError, setDoctorError] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [stats, setStats] = useState<any>(null);
 
   // Fetch the actual doctor record so we get the doctors.id (not users.id)
   useEffect(() => {
@@ -49,6 +51,8 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
           setQueue(qRes.queue || []);
           setCurrentToken(qRes.currentToken ?? null);
         }
+        const sRes = await apiClient(`/doctors/${doctorId}/stats`);
+        if (sRes.success) setStats(sRes.stats || sRes);
       } catch (_e) {
         console.error(_e);
       }
@@ -145,17 +149,17 @@ export const DoctorDashboard: React.FC<Props> = ({ user }) => {
         <h3 className="text-lg font-semibold text-white border-b border-slate-700/50 pb-4">Performance</h3>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <span className="text-slate-400 font-medium text-sm tracking-wider uppercase">Today's Load</span>
+            <span className="text-slate-400 font-medium text-sm tracking-wider uppercase">Today's Patients</span>
             <div className="flex items-end gap-2">
-              <h4 className="text-5xl font-black text-white">{queue.length * 2 + 12}</h4>
-              <span className="text-brand-500 font-semibold mb-1 uppercase text-sm">+5%</span>
+              <h4 className="text-5xl font-black text-white">{stats?.todayAppointments ?? queue.length}</h4>
+              <span className="text-brand-500 font-semibold mb-1 uppercase text-sm flex items-center gap-1"><Activity className="w-3 h-3"/>Live</span>
             </div>
           </div>
           
           <div className="flex flex-col gap-2 border-t border-slate-700/40 pt-6">
-            <span className="text-slate-400 font-medium text-sm tracking-wider uppercase">Efficiency Rating</span>
+            <span className="text-slate-400 font-medium text-sm tracking-wider uppercase">Completed Today</span>
             <div className="flex items-end gap-2">
-              <h4 className="text-5xl font-black text-emerald-400">98%</h4>
+              <h4 className="text-5xl font-black text-emerald-400">{stats?.completedToday ?? '—'}</h4>
             </div>
           </div>
         </div>

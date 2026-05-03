@@ -60,7 +60,11 @@ export const AdminDashboard: React.FC = () => {
         <div className="glass-panel p-6 flex items-center justify-between border-b-4 border-purple-500">
           <div>
             <p className="text-slate-400 text-sm font-semibold uppercase tracking-wider mb-1">Appointments</p>
-            <h3 className="text-3xl font-black text-white">{stats.todayAppointments || 0}</h3>
+            <div className="flex items-baseline gap-2">
+              <h3 className="text-3xl font-black text-white">{stats.todayAppointments || 0}</h3>
+              <span className="text-slate-500 text-sm font-bold">Today</span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">{stats.totalAppointments || 0} Total in system</p>
           </div>
           <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700">
              <FileText className="text-purple-400" />
