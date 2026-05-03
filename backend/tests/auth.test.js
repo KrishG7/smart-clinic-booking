@@ -40,6 +40,11 @@ afterAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  query.mockReset();
+  bcrypt.compare.mockReset();
+  verifyOTP.mockReset();
+  bcrypt.hash.mockReset();
+  bcrypt.hash.mockResolvedValue('hashed_password');
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -108,7 +113,9 @@ describe('POST /api/auth/register', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
-    expect(res.body.message).toContain('Password is required');
+    expect(res.body.errors).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: 'password' })])
+    );
   });
 
   test('rejects registration with invalid phone format', async () => {

@@ -40,7 +40,20 @@ const doctorToken  = generateToken({ id: 2, phone: '9876543211', role: 'doctor',
 const adminToken   = generateToken({ id: 3, phone: '9876543212', role: 'admin',   name: 'Admin User'   });
 
 afterAll(async () => { pool.end(); });
-beforeEach(() => { jest.clearAllMocks(); });
+beforeEach(() => {
+  jest.clearAllMocks();
+  query.mockReset();
+  transaction.mockReset();
+  Appointment.findByLocalId.mockReset();
+  Appointment.findByPatient.mockReset();
+  Appointment.findById.mockReset();
+  Appointment.findByDoctor.mockReset();
+  Appointment.updateStatus.mockReset();
+  Appointment.cancel.mockReset();
+  Appointment.getTodayStats.mockReset();
+  Appointment.create.mockReset();
+  Appointment.updateSyncStatus.mockReset();
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 describe('POST /api/appointments', () => {
@@ -61,7 +74,7 @@ describe('POST /api/appointments', () => {
       return cb(conn);
     });
 
-    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
+    query.mockResolvedValueOnce([{ id: 5 }]).mockResolvedValueOnce([]); // patient lookup, existing slot check
 
     const res = await request(app)
       .post('/api/appointments')
@@ -117,7 +130,7 @@ describe('POST /api/appointments', () => {
   });
 
   test('returns already-synced appointment if duplicate localId', async () => {
-    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
+    query.mockResolvedValueOnce([{ id: 5 }]).mockResolvedValueOnce([]); // patient lookup, existing slot check
     Appointment.findByLocalId.mockResolvedValue({ id: 77, token_no: 2 });
 
     const res = await request(app)
@@ -167,8 +180,9 @@ describe('GET /api/appointments/my', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('GET /api/appointments/:id', () => {
   test('returns appointment by ID', async () => {
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
     Appointment.findById.mockResolvedValue({
-      id: 1, appointment_date: '2025-06-01', status: 'booked', patient_name: 'Test'
+      id: 1, appointment_date: '2025-06-01', status: 'booked', patient_name: 'Test', patient_id: 5
     });
 
     const res = await request(app)
@@ -217,6 +231,8 @@ describe('PATCH /api/appointments/:id/status', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('DELETE /api/appointments/:id', () => {
   test('can cancel an appointment', async () => {
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
+    Appointment.findById.mockResolvedValue({ id: 1, patient_id: 5 });
     Appointment.cancel.mockResolvedValue({ id: 1, status: 'cancelled' });
 
     const res = await request(app)
@@ -241,6 +257,7 @@ describe('DELETE /api/appointments/:id', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('GET /api/appointments/stats/:doctorId', () => {
   test('doctor can retrieve today stats', async () => {
+    query.mockResolvedValueOnce([{ id: 1 }]); // doctor lookup
     Appointment.getTodayStats.mockResolvedValue({
       total: 10, completed: 5, pending: 3, in_progress: 1, cancelled: 1
     });

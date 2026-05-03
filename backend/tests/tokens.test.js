@@ -25,7 +25,10 @@ const patientToken = generateToken({ id: 1, phone: '9876543210', role: 'patient'
 const doctorToken  = generateToken({ id: 2, phone: '9876543211', role: 'doctor',  name: 'Dr Smith'     });
 
 afterAll(async () => { pool.end(); });
-beforeEach(() => { jest.clearAllMocks(); });
+beforeEach(() => { 
+  jest.clearAllMocks(); 
+  query.mockReset();
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 describe('GET /api/tokens/queue/:doctorId', () => {
@@ -84,6 +87,7 @@ describe('GET /api/tokens/queue/:doctorId', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('POST /api/tokens/next', () => {
   test('doctor can call next patient', async () => {
+    query.mockResolvedValueOnce([{ id: 1 }]); // doctor lookup
     const Token = require('../models/Token');
     const orig = Token.callNext;
     Token.callNext = jest.fn().mockResolvedValue({
@@ -103,6 +107,7 @@ describe('POST /api/tokens/next', () => {
   });
 
   test('returns message when queue is empty', async () => {
+    query.mockResolvedValueOnce([{ id: 1 }]); // doctor lookup
     const Token = require('../models/Token');
     const orig = Token.callNext;
     Token.callNext = jest.fn().mockResolvedValue(null);
@@ -142,6 +147,7 @@ describe('POST /api/tokens/next', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('POST /api/tokens/emergency', () => {
   test('doctor can issue emergency token', async () => {
+    query.mockResolvedValueOnce([{ id: 1 }]); // doctor lookup
     const Token = require('../models/Token');
     const orig = Token.emergencyInterrupt;
     Token.emergencyInterrupt = jest.fn().mockResolvedValue({
@@ -181,6 +187,8 @@ describe('POST /api/tokens/emergency', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('POST /api/tokens/:id/checkin', () => {
   test('successful check-in when within geofence', async () => {
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
+    query.mockResolvedValueOnce([{ patient_id: 5 }]); // token lookup
     const Token = require('../models/Token');
     const orig = Token.checkIn;
     Token.checkIn = jest.fn().mockResolvedValue({
@@ -200,6 +208,8 @@ describe('POST /api/tokens/:id/checkin', () => {
   });
 
   test('rejects check-in when outside geofence', async () => {
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
+    query.mockResolvedValueOnce([{ patient_id: 5 }]); // token lookup
     const res = await request(app)
       .post('/api/tokens/1/checkin')
       .set('Authorization', `Bearer ${patientToken}`)
@@ -210,6 +220,8 @@ describe('POST /api/tokens/:id/checkin', () => {
   });
 
   test('returns 404 when token not found', async () => {
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
+    query.mockResolvedValueOnce([]); // token lookup
     const Token = require('../models/Token');
     const orig = Token.checkIn;
     Token.checkIn = jest.fn().mockResolvedValue(null);
@@ -244,6 +256,7 @@ describe('POST /api/tokens/:id/skip', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 describe('GET /api/tokens/stats/:doctorId', () => {
   test('returns today token stats', async () => {
+    query.mockResolvedValueOnce([{ id: 1 }]); // doctor lookup
     const Token = require('../models/Token');
     const orig = Token.getTodayStats;
     Token.getTodayStats = jest.fn().mockResolvedValue({

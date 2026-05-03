@@ -17,13 +17,21 @@ jest.mock('../config/database', () => {
   };
 });
 
-const { query } = require('../config/database');
+const { query, transaction } = require('../config/database');
 const { pool } = require('../config/database');
 
 const patientToken = generateToken({ id: 1, phone: '9876543210', role: 'patient', name: 'Test Patient' });
 
 afterAll(async () => { pool.end(); });
-beforeEach(() => { jest.clearAllMocks(); });
+beforeEach(() => {
+  jest.clearAllMocks();
+  // Drain any leftover .mockResolvedValueOnce queues that jest.clearAllMocks
+  // doesn't touch — that was the source of mock-leak between tests.
+  query.mockReset();
+  transaction.mockReset();
+  // Appointment model methods are stubbed inline per-test (see below);
+  // no module-level jest.mock for it, so don't try to reset it here.
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 describe('POST /api/sync/push', () => {
@@ -34,7 +42,7 @@ describe('POST /api/sync/push', () => {
 
     Appointment.findByLocalId = jest.fn().mockResolvedValue(null); // doesn't exist
     Appointment.create = jest.fn().mockResolvedValue({ id: 100, tokenNo: 5 });
-    query.mockResolvedValue({ insertId: 1 }); // sync_log insert
+    query.mockResolvedValueOnce([{ id: 5 }]).mockResolvedValueOnce({ insertId: 1 }); // patient lookup, sync_log insert
 
     const res = await request(app)
       .post('/api/sync/push')
@@ -71,11 +79,11 @@ describe('POST /api/sync/push', () => {
     const clientTime = new Date('2025-06-01T10:00:00Z'); // newer
 
     Appointment.findByLocalId = jest.fn().mockResolvedValue({
-      id: 50, updated_at: serverTime.toISOString(), status: 'booked'
+      id: 50, updated_at: serverTime.toISOString(), status: 'booked', patient_id: 5
     });
     Appointment.updateStatus = jest.fn().mockResolvedValue({ id: 50, status: 'completed' });
     Appointment.updateSyncStatus = jest.fn().mockResolvedValue();
-    query.mockResolvedValue({ insertId: 1 }); // sync_log
+    query.mockResolvedValueOnce([{ id: 5 }]).mockResolvedValueOnce({ insertId: 1 }); // patient lookup, sync_log
 
     const res = await request(app)
       .post('/api/sync/push')
@@ -106,9 +114,9 @@ describe('POST /api/sync/push', () => {
     const clientTime = new Date('2025-06-01T08:00:00Z'); // older
 
     Appointment.findByLocalId = jest.fn().mockResolvedValue({
-      id: 60, updated_at: serverTime.toISOString(), status: 'completed'
+      id: 60, updated_at: serverTime.toISOString(), status: 'completed', patient_id: 5
     });
-    query.mockResolvedValue({ insertId: 1 }); // sync_log
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
 
     const res = await request(app)
       .post('/api/sync/push')
@@ -130,6 +138,7 @@ describe('POST /api/sync/push', () => {
   });
 
   test('handles empty appointments array', async () => {
+    query.mockResolvedValueOnce([{ id: 5 }]); // patient lookup
     const res = await request(app)
       .post('/api/sync/push')
       .set('Authorization', `Bearer ${patientToken}`)
@@ -186,6 +195,7 @@ describe('GET /api/sync/pull', () => {
 describe('GET /api/sync/status', () => {
   test('returns sync status overview', async () => {
     query
+      .mockResolvedValueOnce([{ id: 5 }]) // patient lookup
       .mockResolvedValueOnce([{ id: 1, table_name: 'appointments', operation: 'insert', sync_status: 'synced', created_at: new Date() }]) // logs
       .mockResolvedValueOnce([{ count: 3 }]); // pending count
 
